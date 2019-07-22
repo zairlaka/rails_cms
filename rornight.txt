@@ -1,24 +1,24 @@
-#2
+#2 ###########################################
 otl:import 
 it will run a import script and its import the data that the code needs
 
-#3
+#3 ###########################################
 oop language
 1995 Yukihiro Matsumoto (Matz)
 Framework::A set of code libraries and data-structures that provide generic functionality that can be used, overridden,or further specialized
  
-#4
+#4 ###########################################
 browser----web server-------------public folder-----routes-----controller<------->model------database
 chrome-----puma,appace,enginX----				view
 
 view[ActionView] , controller[ActionController] , model[ActiveRecord]
 ActionView and ActionController are grouped togather in [ActionPack ]
 
-#5
+#5 ###########################################
 rails new cms -d mysql 
 by default it gonna be sqlite 
 
-#6
+#6 ###########################################
 talked about gemfile bundle install
 talked about directory structure 
 config/application.rb = in this our genral application configuraiton 
@@ -27,7 +27,7 @@ environment
 
 rails db:schema:dump go to the database and get the defination of database and dump it into a text file 
 
-#7
+#7 ###########################################
 talked about model view controller
 helper help us to write in views
 assets our js css all the things
@@ -39,10 +39,10 @@ log all errors and information about app
 vendor 3rd party code
 lib your own code for reuse
 
-#8
+#8 ###########################################
 rails server nothing more 
 
-#9
+#9 ###########################################
 rails generate enter it will give us the help that what can we built 
 rails generate demo index .. view2 view3 demo is controller
 make demo controller 
@@ -50,11 +50,11 @@ make demo folder and a view file index.html.erb in it in views folder
 make route for index view 
 make other files like scss js test etc
 
-#10
+#10 ###########################################
 if file found in public folder then it will never be hit the rails server 
 we oftenly put a static pages in public folder like error 404 505 etc
 
-#11
+#11 ###########################################
 there are two primary types of http request GET AND POST
 GET is when you enter or click a link and POST is when you submit the data through form
 
@@ -73,21 +73,21 @@ root route
 	root 'demo#index' pound sign #  if nothing will match main page of your web
 resourceful routes
 
-#13
+#13 ###########################################
 
 make a new view in demo folder and enter a routes in get 'demo/hello' and run 
 run fine however we dont tell the controller what to view bydefault rails use his sense and lookup for the view in demo folder automatically
 no hello action define in demoController yet he is smart enough
 render(:template => 'demo/hello') short hand render('demo/hello')
 
-#14
+#14 ###########################################
 HTTP/1.1 302 Found redirect fuction webserver request to the browser that i want a different page 
 ping pong effect
 
 redirect_to(:controller => 'demo', action => 'index' if its in a same controller we can omit controller part
 redirect_to('http://lynda.com')
 
-#15
+#15 ###########################################
 erb = embeded ruby
 erb template
 <% code %> process and execute ruby code
@@ -97,7 +97,7 @@ erb template
 
 for debugging puts in rails its output in console
 
-#16
+#16 ###########################################
 var 
 @var this is the instance variable 
 if you want to render a page you should use a  @instance variable so that it can be accessible thats the only way the communication b/w controller and view 
@@ -112,7 +112,7 @@ in view
 	<%= f %> <br/>
 <% end %>
 
-#17
+#17 ###########################################
 link
 <a href="/demo/index">index page</a> this is the basic html link
 <%= link_to(text,target) %> helper method  link_to just like above one 
@@ -120,7 +120,7 @@ link
 it can also be hash
 {:controller => 'demo', :action => 'index'}
 
-#18
+#18 ###########################################
 url parameter
 /demo/hello?page=3&id=20&name=zair query parameter
 params[:id] symbol 
@@ -135,12 +135,12 @@ demo/hello/3?id=20&name=zair 	NOTE DEPRICIATED
 now we can use in view <%= @name %>
 PARAMS IS ALWAYS A STRING NOTED THAT
 
-#19
+#19 ###########################################
 field intersaction of a column and row
 always puts indexes on foreign keys
 schema structural defination of a database complete index table etc
 
-#20
+#20 ###########################################
 SHOW DATABASES;
 CREATE DATABASE db_name;
 USE db_name;
@@ -151,7 +151,13 @@ config/database.yml add database crenditial
 to check if rails have access
 rails db:schema:dump 
 
-#21
+best practice make a new user and give him a privileges to that specific database
+GRANT ALL PRIVILEDGES ON rails_cms.* TO 'username'@'localhost'  
+IDENTIFIED BY 'password' (.* its a wild card means all the table within that database)
+SHOW GRANTS FOR 'username'@'localhost';
+
+
+#21 ###########################################
 migration
 set of database instrucition written in ruby
 migrate from one state into another 
@@ -160,14 +166,14 @@ migration maintain the schema of database with our appliction code
 create the database instantly 
 helps with versioning
 
-#22
+#22 ###########################################
 generate migration 
 $- rails generate migration PostComment create a file which resides in db/migrate
 def change is a short hand for up and down methods
 def up method that we want to make changes
 def down reverse the changes
 
-#23
+#23 ###########################################
 Model along with their migration
 $- rails genreate model Post  should  be singular IMP NOTE
 
@@ -190,12 +196,14 @@ t.datetime "updated_at"
 short hand of this is 
 t.timestamps
 
-#24
+#24 ###########################################
 rails db:migrate
 rake change in rails in RoR5
 mysql -u root -p rails_cms 
 if dont give a database name you have to tell it after putting password like 
 use rails_cms
+
+SHOW FIELDS FROM users;
 
 select * from schema_migration in this table migration version are save 
 and track which migration is run already 
@@ -220,7 +228,7 @@ rails db:migrate:down VERSION=20190720150322
 rails db:migrate:up VERSION=20190720150322
 rails db:migrate:redo VERSION=20190720150322 redo as the word bydefault the last version (migration)
 
-# 25
+# 25 ###########################################
 TABLE MIGRATION METHOD
 create_table(table, options) do |t|
 	... columns...
@@ -241,14 +249,14 @@ add_index(table, column, options) we can apply index more then one column by sen
 
 remove_index(table, column)
 
-#26 MIGRATION PROBLEM 
-#27 MIGRATION PROBLEM SOLUTION
-#28 CHALLENGE CREATE MIGRATION 
+#26 MIGRATION PROBLEM  ###########################################
+#27 MIGRATION PROBLEM SOLUTION ###########################################
+#28 CHALLENGE CREATE MIGRATION ########################################### 
 
 rails g model Subject.....Page....Section
 adding code in migration 
 
-#29 ACTIVERECORD AND ACTIVERELATION
+#29 ACTIVERECORD AND ACTIVERELATION ###########################################
 
 active record : design pattern for relational database
 ActiveRecord Rails implementaion of active record pattern 
@@ -279,7 +287,7 @@ WHERE users.first_name = "zair"
 ORDER BY users.last_name ASC 
 LIMIT 5
 
-#30
+#30 ###########################################
 MODEL NAMING 
 Names matter
 all model inherit from ApplicationRecord which is inherit form ActiveRecord::Base and this is the core part of rails where we adding  behaviour to class
@@ -291,7 +299,7 @@ but if you dont want to then no problem
 self.table_name = "admin_users"
 or change the class name and file name too class AdminUser <- User and file name admin_user.rb <- user.rb 
 
-#31
+#31 ###########################################
 MODEL ATTRIBUTE
 attr_accessor :first_name it is a short hand  for getter and setter function 
 in a rails model when we inherit from ActionRecord::Base we gain alot of behaviour and ability that is built
@@ -300,31 +308,32 @@ FOR EXAMPLE it already know that where to locate the database table that corresp
 give us setter and getter automatically and also know that how to type cast them correctly 
 if visible is boolean its comes as boolean and goes as an boolean value
 
-#32 
+#32 ###########################################
 THE RAILS CONSOLE 
 irb 
 raisl console development
 
-#33
+#33 ###########################################
 u = User.new
 u.new_record?   # return true because yes this is not save to the database yet
 or 
 if u.save  puts "successfully insert"
+p = Page.new(:name => "First Page", :permalink => 'first page', :position => 1)
 
-#34 
+#34 ###########################################
 UPDATE RECORDS
 u = User.find(3)
 u.name = "zair" # and step by step 
 s = Subject.find(4)
 s.updated_attributes(:name => "zair", :visible => true)
 
-#35
+#35 ###########################################
 DELETE RECORDS
 u = User.find(3)
 u.destroy
 u #return you the record even though that record is no longer in database for you inpection 
 
-#36
+#36 ###########################################
 FIND RECORDS
 priamry key finder  
 User.find(3)
@@ -336,7 +345,7 @@ User.all # return object or nil arais no error
 User.first # return object or nil arais no error 
 User.last # return object or nil arais no error 
 
-#37
+#37 ###########################################
 QUERY METHODS
 by string #Flexible but raw SQL
 "name='test' AND visible= true"
@@ -347,13 +356,26 @@ hash
 {:name => "test", "visible => true} safe
 each key-value pair joined with AND
 only work with equlality and ranges (34,354,[23,45,4]) whatever 
+we don't have complex sql idea in FOR EXAMPLE OR, LIKE , LESS THAN OR GREATER THAN
 
 can be chained up 
 User.where(:lastn => 'umer').where(:firstn=>'zair')
 User.where(:lastn => 'umer' , :firstn => 'zair')
 where clause dont executes database imidiatly  execute in last when all the data is 
 but no or like less than or greater than
-NAMED SCOPE 39
+
+#38 ###########################################
+QUERY METHODS: ORDER, LIMIT AND OFFSET(skip the records)
+User.order(:postition).limit(20).offset(40)
+order("postion")
+order(:postition => :asc) by default ascending
+order("position ASC")
+
+NOTICE you have to specify which table when you retrive a record from more than one table 
+order("users.created_at ASC")
+
+#39 ###########################################
+NAMED SCOPE
 queries defined in a model
 defined using ActiveRelation query methods
 can be called like ActiveRelation methods and can accepts parameters
@@ -372,7 +394,7 @@ def self.with_content_type(ctype)
 	where(:content_type => ctype)
 end
 section.with_content_type('html')
-both work in the same way the why we use lambda syntax
+both work in the same way the why we use lambda syntax?????????
 
 scope :recent , lambda{
 where(:created_at => 1.week.ago..Time.now)
@@ -382,14 +404,17 @@ now in this example time.now in method will have the value(time)
 when rails first boots up on the other hand scope have the value(time)
 exact at the moment 
 and for the chaining scopes 
-Article.recent.visible.newest_first
+var = Article.recent.visible.newest_first
 much shorter and readable clear
 when its call
 
+#40 ###########################################
+relationship 
+all three
 
-
-ono-to-one 41
-belongs_to :subject, {:foreign_key => 'foo_id'}
+#41 ono-to-one ###########################################
+has_one :page (in Subject model)
+belongs_to :subject, {:foreign_key => 'foo_id'}  (in Page Model)
 we don't need to specifiy foregin key if we already made a column with the other table name 
 like subject_id  
 
@@ -406,8 +431,10 @@ page id 2 subject_id:1 name: "first" permalink: "first_page" position: 1
 now remove the association 
 subject.page = nil
 update 'page' SET 'subject_id' = nil where 'page'.'id' = 2 
+or if you want to destroy 
+subject.page.destroy
 
-42# one to many 
+#42 one to many ###########################################
 return array 
 Subject has_many :pages
 Page belongs_to :subject
@@ -423,33 +450,110 @@ subject.pages.size return the no of pages
 create a page first_page 
 then 
 first_page have pageid and subject id is nil
-subject_pages << first_page
+s = Subject.find(2)
+first_page = Page.new(:name => "First Page", :permalink => 'first' :postion => 1)
+s.pages << first_page
 but now it have it
 
-43 belongs_to presence validation
+#43 belongs_to presence validation ###########################################
 change in rails 5.0
 an object that has belongs_to relationship could be save to the database
 even it didn't have the parent object associate with it but not in rails 5
-now ActiveRecord adds a validation for the object  object presence
+now ActiveRecord adds a validation for the object presence
+means order can't be place witout a customer
 you can disable it for rails 4 apps in configuraiton for entire application
 Disable: {:optional => true}
-page.errors.full_messages
+if you create a new record and try to save it without the parent 
+page.errors.full_messages  return ["subject must exist"]
 belongs_to :subject,{:optional => true }
-
-44 many to many association 
-
 belongs_to page is not save until subject exist
 
+#44 many to many association ###########################################
+
+-require a join table 
+(you can name this table anything you want but rails have a convention for this too
+firstTable+_+secondTable 
+-two foreign keys; index both keys together
+-no primary key column (:id => false)
+-add same instance methods to the class like one to many
+
+
 plurals and alphabatical order and underscore
+Example
+
 Project-collaborator
 collaborators_projects
-
-has_and_belongs_to_many :admin_users, :join_table => 'without_convention' if we do not follow the rails convention 
-
 
 adminUser-page
 admin_users_pages 
 
+rails g migration CreateAdminUsersPagesJoin # create keyword rails convention understand that we want to create a table 
+
+has_and_belongs_to_many :admin_users, :join_table => 'admin_users_pages'
+#we can specify the join table if we do not follow rails convention
+
+has_and_belongs_to_many :pages
+#in admin_users.rb model
+
+page = page.find(3)
+me = AdminUser.new(:first_name => 'zair', :last_name => 'umer', :username => 'spy')
+page.admin_users << me 
+mysql> select * from admin_users_pages;
++---------------+---------+
+| admin_user_id | page_id |
++---------------+---------+
+|             2 |       3 |
++---------------+---------+
+
+#45###########################################
+MANY TO MANY ASSOCIATION :RICH
+
+compared to many-to-many simple associations
+-still uses a join table with two indexed foregin keys
+-Requires a primary key column (:id)
+-join table has its own model
+-no table name conventions to follow 
+-name ending in "-ments" or "ships" work well
+like assignments - engagments - autherships - memberships 
+
+AdminUser-Section (the idea everytime the admin made changes to the section we keep the track in table section_edits
+
+AdminUser has_many :section_edits
+sectionEdit belongs_to :admin_user
+
+Section has_many :section_edits
+SectionEdit belongs_to :section
+
+rails g model SectionEdit
+
+class SectionEdit < ApplicationRecord
+    belongs_to :admin_user
+    belongs_to :section
+end
+class AdminUser < ApplicationRecord
+    has_many :section_edits
+end
+class Section < ApplicationRecord
+    has_many :section_edits
+end
+sec = Section.create(:name => "Section One", position: 1)
+p = Page.find(2)
+p.sections << sec
+me = AdminUser.find(2)
+edit = SectionEdit.new(:summary => 'Test edit', :admin_user => me, :section => sec)
+edit.save
+return 
+INSERT INTO `section_edits` (`admin_user_id`, `section_id`, `summary`, `created_at`, `updated_at`) VALUES (2, 1, 'Test edit', '2019-07-22 01:46:17', '2019-07-22 01:46:17')
+me.section_edits if it use its cache and giving you an error
+me.section_edits(true)
+
+#46###########################################
+TRAVERSING A RICH ASSOCIATION
+qasam ly lo jo samjh ai ho
+??????????????????????????????????????????????????????????????????????????????????
+
+
+===================================================================================
 gem install mysql2 -- --with-mysql-config="D:\server\mysql\bin" --with-mysql-include="D:\server\apache2\include" --with-mysql-lib="D:\server\apache2\lib"
 \q: Quit/Exit.
 \c __database__: Connect to a database.
@@ -461,3 +565,10 @@ gem install mysql2 -- --with-mysql-config="D:\server\mysql\bin" --with-mysql-inc
 \dv: List views.
 \df+ __function__ : Show function SQL code.
 \x: Pretty-format query results instead of the not-so-useful ASCII tables.
+
+"it may sound like tough love,
+but look, if at some point you got lied to, it's because you agree to get lied to.
+lying's is a coperative act"
+
+everyone is willing to give you something 
+they are ready to give you something for whatever it is they're hungry for. and that is the crux of it

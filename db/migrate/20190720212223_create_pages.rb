@@ -2,7 +2,7 @@ class CreatePages < ActiveRecord::Migration[5.2]
   def up
     create_table :pages do |t|
 
-      t.integer :Subject_id
+      t.integer :subject_id
       t.string :name
       t.string :permalink
       t.integer :position
