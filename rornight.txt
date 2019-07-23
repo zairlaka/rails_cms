@@ -552,6 +552,86 @@ TRAVERSING A RICH ASSOCIATION
 qasam ly lo jo samjh ai ho
 ??????????????????????????????????????????????????????????????????????????????????
 
+#47###########################################
+CRUD 
+theory about crud
+seprate controller for each Subjects, Pages , Sections #plural because we control all of our pages not just one page with that controller
+allows for clear URLs
+rails g controller Subjects index show new edit delete 
+
+
+#48###########################################
+REST
+Representational State Transfer
+do not perform procedure 
+but Perform state transformations upon resources 
+
+REST Paradigm Requirments
+-1 Organize code into resources
+Encourages one controller for each model
+-2 Learn HTTP verbs for working with resources 
+Determine which CRUD acitons are suited for each verb
+-3 Map a new URL syntax to controller actions 
+Change Rails routes
+-4 Modify existing links and forms to use new URL syntax 
+Use resourceful URL helpers
+
+REST HTTP Verbs there are four
+GET POST Patch Delete 
+
+it fake true rest request by adding a hidden input field called _method and uses post as the method for the form
+<form method="PATCH" action="/subjects/123">
+#....
+</form>
+<form method="POST" action="/subjects/123">
+	<input type="hidden" name="_method" value="patch" />
+</form>
+
+#49###########################################
+Resourceful Routes
+what we do is match routes or default routes we can use it for REST but 
+then why Resourceful Routes 
+-first it is Rails defualts
+-Optimized for rest
+-simple, consistent,organized structure 
+-imporves application security
+-Most pro use this
+
+resources :subjects    <------ Resourceful Routes
+resources :pages       Notice :: delete is not by default in it because it is optional want to show page or js popup your choice 
+resources :sections
+
+http method are now gonna determine which will execute
+action show , update and destroy having the same url /subjects/:id
+if its GET then show will run if its PATCH update will run and so on 
+
+Limiting Resourcful Routes 
+you don't have to define all the action on the resource 
+
+resources :admin_users, :expect => [:show]
+resources :products, :only => [:index, :show]
+you can controll which should be given routes
+
+Adding Resourceful Routes
+it is also possible to add additional resources
+
+resources :subject do 
+	member do 
+		get :delete # which accept record id in url like edit and update 
+	end 
+	collection do 
+		get :export #it oprate on resource as whole they do not except record id like index , new , create 
+	end 
+end
+#50###########################################
+{:controller => 'subjects', :action => 'show' , :id => 5}
+subject_path(5) url helper
+<%= link_to('All Subjects', subjects_path ) %>
+<%= link_to('All subjects', subjects_path(:page => 3) %>
+<%= link_to('Show Subject', subject_path(@subject.id) %> .id is optional rails is smart enough
+<%= link_to('Show Subject', Subject_path(@subject.id , :format => 'verbose' )) %>
+<%= link_to('Edit Subject', edit_subject_path(@subject.id)) %>
+
 
 ===================================================================================
 gem install mysql2 -- --with-mysql-config="D:\server\mysql\bin" --with-mysql-include="D:\server\apache2\include" --with-mysql-lib="D:\server\apache2\lib"

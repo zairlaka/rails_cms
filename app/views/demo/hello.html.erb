@@ -10,8 +10,74 @@ params
 <br />
 PAGE <%= @page %>
 <br />
-ID <%= params[:id] %>
+ID <%= params[:id] %> 
+<%# params[:id] is the method to grab the query variable from GET or POST methods %>
 <br />
 NAME <%= @name %>
 <br />
+<%
+=begin%>
+  
+  params[:desig]
+  params[:name]
+  params[:email]..and we want to save it in a data base
+  
+INSERT IN THE DATABASE PAIN IN THE ASS
+	subject = Subject.new({:designation => params[:desig], :name => params[:name], :email => params[:email] } )
+	that is not a good way it is tedious to build up that hash by grabing each parameter by name
 
+so suppose if we have 50 inputs fields in our  form then !!  na karo raja G
+	
+	solution HTML Form arrYS
+
+	<form action='/subjects' method='post'>
+		<input type="text" name="subject[desig]"/>
+		<input type="text" name="subject[name]"/>
+		<input type="text" name="subject[email]"/>
+
+		<input type="submit" value="Create Subject"/>
+	</form>
+now we have
+	params[:subject][:desig]
+  	params[:subject][:name]
+  	params[:subject][:email]
+
+INSERT IN THE DATA BASE NOW 
+subject = Subject.new(params[:subject]) its that easy!!!  na kr qasam kha 
+params[:subject] = {:desig => 'coder hai bahi', :name =>'umer' , :email => 'lala@blog.com' }
+now we no longer have to built hash ourselves form does it for us 
+
+
+local code block variable |f| is a form builder object and its knows subject
+pros is it save object then update else new  action 
+if its exist it will prepopulate the fields with the existing values
+
+<%= form_for(@subject) do |f| %>
+	<%= f.text_field(:desig) %>
+	<%= f.text_field(:name) %>
+	<%= f.text_field(:email) %>
+	
+	<%= f.submit("Create Subject") %>
+
+	but bad news this is called mass assignment 
+	Subject.new(params[:subject]) because we are just dumping the into the object 
+	consider this exaple 
+	@user.update_attributes({:username => "zair"})
+	but hacker able to replace fake version of a form that have extra fields show up in our form parameters 
+	@user.update_attributes({:username => "zair",:password => "notsecret", :admin => true})
+
+	rails v1 and v2 : blacklisting of attributes
+	rails v3 : whitelisting of attributes
+	rails v4-5: strong parameters
+
+	params.permit(:name, :email) white listing means that two only available for mass assignment and others are not 
+	params.require(:subject) ensure that parameter is present not permiting just to sure value is there
+
+	params.require(:subject).permit(:name, :position, :visible)
+
+
+
+<% end %>
+
+<%
+=end%>
