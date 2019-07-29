@@ -1,6 +1,12 @@
+<% if !flash[:notice].blank?  # its check for the nil but also for the empty strings %>
+  <div class= "notice">
+    <%= flash[:notice] %>
+  </div>
+<% end %>
+
 <div class="subjects index">
   <h2>Subjects</h2>
-
+  <%= image_tag("plus_sign.png", :size => '11x11', :alt => '+') %>
   <%# link_to("Add New Subject", 'subjects/new', :class => 'action new') %>
   <%= link_to("Add New Subject", new_subject_path , :class => 'action new') %>
 
@@ -22,8 +28,8 @@
         <%# link_to("Show", 'subjects#{subject.id}', :class => 'action show') %>
         <%# link_to("Show", {:controller => 'subjects' , :action => 'show', :id => subject.id }, :class => 'action show') %>
         <%= link_to("Show", subject_path(subject), :class => 'action show') %>
-        <%= link_to("Edit", '#', :class => 'action edit') %>
-        <%= link_to("Delete", '#', :class => 'action delete') %>
+        <%= link_to("Edit", edit_subject_path(subject), :class => 'action edit') %>
+        <%= link_to("Delete", delete_subject_path(subject), :class => 'action delete') %>
       </td>
     </tr>
     <% end %>

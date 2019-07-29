@@ -1,0 +1,41 @@
+<% if !flash[:notice].blank?  # its check for the nil but also for the empty strings %>
+  <div class= "notice">
+    <%= flash[:notice] %>
+  </div>
+<% end %>
+
+<div class="sections index">
+  <h2>sections</h2>
+
+  <%# link_to("Add New Subject", 'subjects/new', :class => 'action new') %>
+  <%= link_to("Add New Section", new_section_path , :class => 'action new') %>
+
+  <table class="listing" summary="section list">
+    <tr class="header">
+      <th>Page ID</th>
+      <th>Section</th>
+      <th>Position</th>
+      <th>Visible</th>
+      <th>Content Type</th>
+      <th>Content</th>
+      <th>Acitons</th>
+    </tr>
+    <% @sections.each do |section| %>
+    <tr>
+      <td><%= section.page_id %></td>
+      <td><%= section.name %></td>
+      <td><%= section.position %></td>
+      <td class="center"><%= section.visible ? 'Yes' : 'No' %></td>
+      <td class="center"><%= section.content_type %></td>
+      <td class="center"><%= section.content %></td>
+      <td class="actions">
+        <%# link_to("Show", 'subjects#{subject.id}', :class => 'action show') %>
+        <%# link_to("Show", {:controller => 'subjects' , :action => 'show', :id => subject.id }, :class => 'action show') %>
+        <%= link_to("Show", section_path(section), :class => 'action show') %>
+        <%= link_to("Edit", edit_section_path(section), :class => 'action edit') %>
+        <%= link_to("Delete", delete_section_path(section), :class => 'action delete') %>
+      </td>
+    </tr>
+    <% end %>
+  </table>
+</div>

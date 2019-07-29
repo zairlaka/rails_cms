@@ -1,0 +1,44 @@
+<% if !flash[:notice].blank?  # its check for the nil but also for the empty strings %>
+  <div class= "notice">
+    <%= flash[:notice] %>
+  </div>
+<% end %>
+
+<div class="pages index">
+  <h2>Subjects</h2>
+
+  <%# link_to("Add New Subject", 'subjects/new', :class => 'action new') %>
+  <%= link_to("Add New Page", new_page_path , :class => 'action new') %>
+
+  <table class="listing" summary="page list">
+    <tr class="header">
+      <th>#</th>
+      <th>Subject ID</th>
+      <th>Page</th>
+      <th>Permalinks</th>
+      <th>Visible</th>
+      <th>Position</th>
+      <th>Sections</th>
+      <th>Actions</th>
+    </tr>
+    <% @pages.each do |page| %>
+    <tr>
+      <td><%= page.position %></td>
+      <td><%= page.subject_id %></td>
+      <td><%= page.name %></td>
+      <td><%= page.permalink %></td>
+      <td class="center"><%= status_tag(page.visible) %></td>
+      <td><%= page.position %></td>
+      <td class="center"><%= page.sections.size %></td>
+      <td class="actions">
+        <%# link_to("Show", 'subjects#{subject.id}', :class => 'action show') %>
+        <%# link_to("Show", {:controller => 'subjects' , :action => 'show', :id => subject.id }, :class => 'action show') %>
+        <%= link_to("Show", page_path(page), :class => 'action show') %>
+        <%= link_to("Edit", edit_page_path(page), :class => 'action edit') %>
+        <%= link_to("Delete", delete_page_path(page), :class => 'action delete') %>
+      </td>
+    </tr>
+    <% end %>
+  </table>
+</div>
+

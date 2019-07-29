@@ -5,7 +5,8 @@
 
   <%= form_for(@subject, :url => subjects_path, :method => 'post') do |f| %>
   <%# form_for(@subject) do |f|     we dont have to specify them becuase you are post something and see rails route %> 
-
+    <%= error_messages_for(f.object) %>
+    <%# this function is in our helper don't need to write it over and over for others page and sections%>
     <table summary="Subject form fields">
       <tr>
         <th>Name</th>
@@ -13,11 +14,13 @@
       </tr>
       <tr>
         <th>Position</th>
-        <td><%= f.text_field(:position) %></td>
+        <td><%= f.select(:position, 1..@subject_count) %></td>
+        <!-- using select :subject is optional here -->
       </tr>
       <tr>
         <th>Visible</th>
-        <td><%= f.text_field(:visible) %></td>
+        <td><%= f.check_box(:visible) %></td>
+        <%# check box is a special beahviour in html if you not check it it doesn't include in form submission but in rails it put a hidden field for checkbox with the value of 0 and 1 NEAT TRICK  %>
       </tr>
     </table>
 
@@ -27,3 +30,23 @@
 
   <% end %>
 </div>
+
+<%# 
+form_for(@subject, :html => {:multipart => true}) do |f| 
+  
+  f.label(:name)
+  f.text_field(:name, :size => 40, :maxlength => 40)
+  f.password_field(:password, :size => 40)
+  f.hidden_field (:token, 'af343krkerj34')
+
+  f.text_area(:description, :size => "40x5") # :col and :rows
+
+  f.radio_button(:content_type, "Text")
+  f.radio_button(:content_type, "HTML")
+
+  f.check_box(:visible)
+    # check box is a special beahviour in html if you not check it it doesn't include in form submission but in rails it put a hidden field for checkbox with the value of 0 and 1 NEAT TRICK  
+  f.file_field(:logo) # requires :multipart => true 
+
+end
+%>

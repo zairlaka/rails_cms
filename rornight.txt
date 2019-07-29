@@ -624,6 +624,8 @@ resources :subject do
 	end 
 end
 #50###########################################
+RESOURCEFUL URL HELPER
+HTTP Verb + URL Helper combine 
 {:controller => 'subjects', :action => 'show' , :id => 5}
 subject_path(5) url helper
 <%= link_to('All Subjects', subjects_path ) %>
@@ -632,7 +634,538 @@ subject_path(5) url helper
 <%= link_to('Show Subject', Subject_path(@subject.id , :format => 'verbose' )) %>
 <%= link_to('Edit Subject', edit_subject_path(@subject.id)) %>
 
+#51###########################################
+READ ACTION index
 
+<td class="center"><%= subject.visible ? 'Yes' : 'No' %></td>
+
+#52###########################################
+READ ACTION show
+
+way to write URL
+<%# link_to("Show", 'subjects#{subject.id}', :class => 'action show') %>
+<%# link_to("Show", {:controller => 'subjects' , :action => 'show', :id => subject.id }, :class => 'action show') %>
+<%= link_to("Show", subject_path(subject), :class => 'action show') %>
+#53###########################################
+FORM BASICS 
+rails/erb vs html
++ any template code that can be written with rails/erb can also be written with simple HTML
++ Writing template code in rails/erb is almost always easier and more powerful than simple HTML
+LOOK in cms-> views hello.html.erb comments or go end of this file brief explanation down there
+
+#54###########################################
+CREATE ACTION 
+
+def create
+    #steps
+    + instantite a new object using form parameters
+    + save object
+    + if save succeed, redirects to the index action
+    + if fails redisplay the form so user can fix the problems 
+
+    #@subject = Subject.new(params[:subject]) #problem of mass assignment FORBIDEN ATTRIBUTES ERROR
+    @subject = Subject.new(subject_params)
+
+    if @subject.save
+      redirect_to(subjects_path)
+    else
+      render('new') #render just form template having already @subject and populate with old values which have validation error
+      #user don't have to enter all that valus again 
+    end
+  end
+
+#56###########################################
+Rails term for passing a hash of values to an object to be assigned as attributes
+mass assignment will cause a problem 
+
+LOOK in cms-> views hello.html.erb comments or go end of this file brief explanation down there #56
+private # made a function because its use in many other actions for white listing and only require parameter are getting 
+  def subject_params
+    params.require(:subject).permit(:name, :position, :visible)
+  end
+
+#59###########################################
+HTML stateless
+Each request is distinct; no previous information. like you set the dark theme of youtube and set auto next off 
+Cookies and sessions allow data between requests
+Flash Hash 
++ stores message in session data
++ clears old messages after every request so that old message dont stick around 
++ they stick around for one redirect like "successfully deleted"
+flash[:notice] = "successfully deleted" key-> "notice" message
+flash[:error] = "not a valid value" 
+notice 
+you could assign whole ruby object to it but its not good practice and do not recommended
+object can be large and take up lots of memory and if they are not taken up directly from the database they can be out0fdate?? or stail??
+if you need to access lots of data then you should be storing it in database or in session file
+flash is for only for short text that you want to save between request
+
+#5.x###########################################
+making crud for subject , page and section
+#5.x###########################################
+
+#62###########################################
+by default if you not set to false layouts in controller it will use appliction.html.erb layout in view/layout
+you can set it off by "layout false" 
+
+but if you want to use a your specific layout 
+first create it in view/layout admin.html.erb and go to that controller where you want to use 
+and set layout 'admin'
+
+now all your common code in page move to that template 'admin'
+like
+<% if !flash[:notice].blank?  # its check for the nil but also for the empty strings %>
+    <%= flash[:notice] %>
+  </div>
+<% end %>
+
+<title>Simple CMS: <%= @page_title || "Admin Area"</title>
+
+Notice @variable in controller action available not just in the view/subjects/show but also in the template too admin.html.erb 
+and not in sequecne manner  we set title in views but title tag are on the top 
+
+#63###########################################
+PARTIAL TEMPLATE
+<%= form_for(@page, :url => pages_path, :method => 'post') do |f| %>
+  <%# form_for(@subject) do |f|     we dont have to specify them becuase you are post something and see rails route %> 
+    <%= render(:parital =>"form", :locals => {:f => f}) %>
+    <%# partial reusable eletment notice in our form we use 'f' 
+    its not gonna available their we have to send it %>
+    <div class="form-buttons">
+      <%= f.submit("Create Subject") %>
+    </div>
+  <% end %>
+
+#64###########################################
+TEXT HELPER
+rails provide many helper method to do common tast in view template easiar
+
+WORD_WRAP
+store in variable or pullback from database 
+<%= word_wrap(text, :line_width => 30 %>
+make a line with 30 characters without breaking the word and put a /n in the end of a line 
+
+SIMPLE_FORMAT
+text = This is sample text/n with a line break."
+<%= simple_format(text) %>
+<p>This is sample text \n<be /> with a line break</p>
+
+TRUNCATE 
+<%= truncate(text, length => 18) %>
+"This is sample text..."
+
+PLURALIZE 
+<% [0,1,2].each do |n| %>
+<%= pluralize(n, 'product') %> found.<br />
+<% end %>
+ out put 
+0 prodects found . <br/>
+1 prodect found . <br/>
+2 prodects found . <br/> 
+and its is smart enough that person is persons and ox is oxens
+more text helpers 
+TRUNCATE_words  (truncate words instead of characters)
+HIGHLIGHT (looks of keyprhase)
+EXCERPT
+
+#65###########################################
+NUMBERS HELPER 
+:delimiter , 
+:serprator
+:percetion
+number_to_currency (24.4) = $24.40
+	number_to_currency (2.4, :percision => 0, :unit => "rs", :format => "%n %u") 2 rs
+number_to_percentage (34.5) 34.500 %
+number_to_rounded ()
+number_to_delimited (234234, :delimiter => '-') = 234-234
+number_to_human (234234234) 234 Million
+number_to_human_size (123467) 1.8MB 
+number_to_phone (1231231233) = 123-123-1233
+other conutry code and fully customized
+
+#66###########################################
+DATE AND TIME helpers
+using integers
+second seconds
+minute minutes
+hour hours
+week weeks
+month months
+year years
+
+Time.now + 30.days - 23.minutes 
+Time.now - 30.days = 30.days.ago
+Time.now + 30.days = 30.days.from_now	
+next_week 
+next_month etc check the docs
+ 
+datetime.strftime(format_string )
+Time.now.strftime( "%B  %d, %Y %H:%M") = "July 17, 2016 18:14"
+
+symbol check the docs
+
+:db 
+:number
+:time
+:short
+:long etc
+
+#67###########################################
+CUSTOM HELPERS
+ruby modules 
+app/helper when ever we created controller helper file with that name available corresponding view
+apply on pages view visible outputing a green or red box upon visible status in css and html
+these helpers are only for views 
+USEFUL FOR
+
+1- Frequently used code 
+2- Storing complex code to simplify view templates
+3- writing large sections of Ruby code
+
+#68###########################################
+SANITIZE HELPERS
+
+cross-site scripting (XSS)
+can be submitted via url parametersor web forms
+
+evil = "<script>alert('You are Hacked!');</script>"
+<%= evil %>
+and we put this in our site witout sanitizing then it could harm
+
+undesirable HTML 
+comment = '<p> style="font-size: 100px; color: red;">i hate you</p></div>
+
+<%=comment %> this will disturb our layout and messed up our design
+
+so solution to this 
+escape all user-entered data 
+- url parameters
+- form parameter
+- cookie data 
+- database data
+ESCAPE METHODS
+by default rails html_escape
+html_escape()
+h() its is by default now rails 3 < 
+white list
+raw() if we modify the string then its set it backs to the unsafe string
+html_safe do the same thing but not modify remain the same 
+
+escape output
+strip_links(text) = remove links 
+text = '<strong>Please</strong> visit
+<a href="http://example.com">us</a>.'
+
+strip_tags(html) = remove html tags only tags 
+
+sanitize(html,options) remove all but only allowed which we are define in this 
+sanitize(@subject.content, :tags => ['p', 'br', 'strong', 'em'] , :attributes => ['id', 'class', 'style'])
+
+#69###########################################
+ASSET PIPELINE
+
+benifits
+- concatenates CSS and JavaScript files  into a single file 
+- compresses and minifies CSS and JavaScript remove white space and comments by using Gzip webserver supports that
+- precompile CSS and JavaScript
+- Allows writing asstes in other languages like coffee script and SASS
+- Adds asset fingerprinting a clever way to force web brower keep cache up to date take the if the something change then md file is change so the name of file then he request for update assets
+pipeline is preferd location is app/assets/.. but in public/.. pipeline benifts are no longer more and serve as static no cache busting no sass no coffee no compression no concatenates
+
+MANIFEST FILES 
+- contain directives for including assets files (which assets should be included and in what orders 
+- Loaded, processed, concatenated, compressed
+- Serve one file , but develop with many files
+
+DEVELOPMENT VS PRODUCTION
+DEVELOPMETN
+- skip concatenation , comprassion , fingerprinting , and does file processing SASS and Coffee 
+because in development changes are occur frequently thats why it does only file processing 
+
+Production
+its skip the assets pipling at all not even file processing 
+rails assumes that assests have been precompiled for it 
+and that is necessery step when we deploying 
+
+Assets Pipeling 
+app/assets/stylesheet/application.css -> 
+make -> public/assets/applications-32434534c54b4r.css and public/assets/applicaiton-e2342f34c34.css.gz
+
+how we do this precompilation
+make sure our environment is set to production 
+export RAILS_ENV = PRODUCITON
+bundle exec rails assets:precompile 
+most of the deployment system do it for your self if not you have to do it by your self	 
+
+#70###########################################
+write stylesheet 
+location:
+with asset pipeline :/app/assets/stylesheets
+withpout asset pipeline :/pulic/stylesheets
+filename: should end in ".css" ; SASS files end in ".css.scss" 
+
+WHAT IS SASS? 
+- "Syntactically Awesome Stylesheets"
+- Scripting language which is interpreted into CSS
+- Similer to CSS but with extra features 
+like nested rules, variables , mixins , selector inheritance for more go to sass website 
+
+$main_color = tomato;
+
+#content {
+  padding-left: 100px;
+  padding-right: 100px;
+  color: $main_color  	//<-------------
+  a {   		//<-------------
+  text-decoration: none;
+  &:hover { text-decoration: underline; }//<---------------
+	// & means a here equal to 
+	// a:hover { text-decoration: underline; }
+}
+  h2 {
+    width: 100%;
+    text-align: center;
+  }
+}
+in application.css
+ *= require_tree . 	 // loads all of the file that included  stylesheet require_tree all the file . is current directory 
+ *= require  primary 	// require primary style sheet which is our custom css
+ *= require_self 	 // this is the directive that says that it should load in any style that we might happen to have in this file 
+ */ these comment mean something
+with equal sign are directives that tells the menifist file what it should load in 
+
+ * require_tree .
+ *= require primary 
+ *= require admin_additions // made another manifist file here
+ * now we have two different manifist files which results the two css and i can choose which one i want to load in     
+ *= require_self
+ */
+ now we have to make sure that rails knows to precompiled this new css too
+go to config/initializes/ assets.rb
+-----------
+# Precompile additional assets.
+# application.js, application.css, and all non-JS/CSS in the app/assets
+# folder are already added.
+# Rails.application.config.assets.precompile += %w( admin.js admin.css ) //<----------
+uncomment this 
+-------------
+STYLESHEET LINK TAG
+HTML TAG
+<link href="/assets/stylesheet/appliction.css" rel="stylesheet" type="text/css" media="all" />
+RAILS HELPER 
+<%= stylesheet_link_tag('application') %>
+whats great is about helper method is it does more then this 
+its know in which environment we are and adjust beahaviour accordingly 
+# Defaults to :media => 'screen'
+
+#71###########################################
+same as stylesheet
+- write javascript file
+- List javascript file in manifist
+- add manifist to asset precompile list
+- include a javascript tag in html
+
+location
+with asset pipeline: /app/assets/javascripts
+without assets pipeline: /public/javascripts
+
+file name" end in ".js" CoffeeScript files end in ".coffee"
+
+WHAT IS COFFEE SCRIPT 
+Scripting language that is compiled into javascript 
+different syntax (more concise, readable code)
+more at http://coffeescript.org
+
+jquery 
+included by default 
+
+cable.js (manifest file for getting the feature togather for using action cable not for begginers)
+
+application.js (manifest file just css)
+//= require jquery 
+//= require jquery_ujs unutrasive javascript for rails 
+
+//= require rails-ujs unutrasive javascript for rails 
+//= require activestorage
+//= require turbolinks (for more advance use)
+//= require demo custom <------
+//= require_tree .
+
+javaScript Helper
+HTML TAG 
+<script src="/assets/javascrips/application.js" type="text/javascript"></script>
+RAILS HELPER 
+<%= javascript_include_tag('application') %>
+
+#72 ###########################################
+
+javascript helpers 
+<%= javascript_tag("alert(Are you sure?');") %>
+
+<%= javascript_tag do %>
+	alert('Are you sure?');
+<% end %>
+
+you should sanitize your js
+
+<%= javascript_tag("alert('you said : #{text}');") %>
+by escape_javascript() or short form j()
+<%= javascript_tag("alert('you said : #{j(text)}');") %>
+
+#73 ###########################################
+
+
+location
+with asset pipeline: /app/assets/images (UI images should be here)
+without assets pipeline: /public/images
+User-uploaded images: /public/images (user-uploaded images should be here)
+
+image upload gems 
+paperclip and carrierWave
+
+HTML
+<image src="/assets/logo.png" />
+
+RAILS HELPER
+<%= image_tag('logo.png') %>
+
+<%= image_tag('logo.png', :size => '40x40', alt => 'logo') %>
+<%= image_tag('logo.png', :width => 70, :height => 40) %>
+if you inspect this into browser you
+<img alt="+" src="/assets/plus_sign-b7cc7f95073832695f7b3f55aad5782d185bb133bc5581bdf737931d9059822a.png" width="11" height="11">
+fingerprint if this assets change then the finger print change also and force browser to get a new assets and burst the cache  
+
+
+background: $light_brown image-url('/assets/footer_gradient.png') repeat-y 0 0;
+
+#74 ###########################################
+FORM HELPER
+form helper comes with three diffrent styles 
+
+<%= text_field_tag('name', params[:name]) %>		 
+text style 
+	[this is not the object aware so we have to provide the attributes and the values
+	 exactly like we want to appear when it outputs in html when you only want to use rails code 
+	instead of html search box which have not connecting to any object simple text input which we want to 
+	sent to the controller]
+<%= text_field(:subject, :name) %> 			 
+object aware style () 
+		[it is object aware  and it knows that the text input is related to the value of the subject 
+		name attribute and its pre populate the values of subject ]
+<%= f.text_field(:name) %> 				 
+form builder style
+		[ its function exactly the same as above one but it save as to type 'subject' over and over 
+		again in every form helper suppose there are 10 text input fields you have to just put f.]
+
+form_for(@subject, :html => {:multipart => true}) do |f| #form_for is smart enough if there is any file_field it automatically includes multipart 
+  
+  f.label(:name)
+  f.text_field(:name, :size => 40, :maxlength => 40)
+  f.password_field(:password, :size => 40)
+  f.hidden_field (:token, 'af343krkerj34')
+
+  f.text_area(:description, :size => "40x5") # :col and :rows
+
+  f.radio_button(:content_type, "Text")
+  f.radio_button(:content_type, "HTML")
+
+  f.check_box(:visible)
+
+  f.file_field(:logo) # requires :multipart => true 
+
+end
+
+#75###########################################
+
+Form options Helpers select helper
+
+select(object, attribute, choices, opitons, html_options)
+
+Options:
+:selected => Object.attribute
+:include_blank => false
+:prompt => false
+:disable => false
+
+form_for(@section) do |f|
+
+#Range
+f.select( :position, 1..5 )
+#Array
+f.select( :content_type, ['text', 'HTML'] )
+#Hash 
+f.select( :visible, { "visible" => 1, "Hidden" => 2 } )
+#Array of arrays 
+f.select( :page_id, Page.all.map {|p| [ p.name, p.id ]} )
+end
+
+and we are use this 
+
+in controller 
+@page_count = Page.count + 1
+@subjects =  Subject.sorted
+
+in view
+<td><%= f.select(:subject_id, @subjects.map {|s| [s.name, s.id]}) %></td>
+
+#76###########################################
+
+Date and Time form helpers 
+
+date_select(object, attribute, options, html_options)
+
+Options:
+:start_year => Time.now.year-5
+:end_year => Time.now.year+5
+:order => [:year, :month, :day]
+:discard_year => false
+:discard_month => false
+:discard_day => false
+:include_blank => false
+:prompt => false 
+:use_month_numbers => false
+:add_month_numbers => false
+:use_short_month => false
+:date_serprator => ""
+
+time_select(object, attributes, options, html_options)
+
+Options:
+:include_seconds => false 
+:minute_step => 1
+:include_blank => false 
+:prompt => false
+:time_separator => ":"
+
+datetime_select(object,attribute, options, html_options)
+
+Options:
+# all date_select and time_select options 
+:datetime_spearator => "-"
+
+<%= f.datetime_select(:created_at, :order => [:month, :day, :year]) %>
+
+#77###########################################
+FORM ERROR
+
+validates_presence_of :name
+object.errors (Array containing any errors added by validations)
+
+object.errors.clear
+object.errors.size
+object.errors.each {|attr, msg| ...} # :name, "can't be blank"
+
+object.errors.full_messages.each {|msg| ...} #"Name can't be blank" full proper english 
+
+displaying errors 
+put output html in a partial 
+app/views/applications/_error_messages.html.erb
+
+call with a custom helper
+error_messages_for(:object)
+
+validates_presence_of :name
+ 
 ===================================================================================
 gem install mysql2 -- --with-mysql-config="D:\server\mysql\bin" --with-mysql-include="D:\server\apache2\include" --with-mysql-lib="D:\server\apache2\lib"
 \q: Quit/Exit.
@@ -652,3 +1185,78 @@ lying's is a coperative act"
 
 everyone is willing to give you something 
 they are ready to give you something for whatever it is they're hungry for. and that is the crux of it
+
+===================================================================================
+Go to: https://www.lynda.com/portal/sip?org=houstonlibrary.org
+lib#: 2037471
+pass: akosikevin215
+https://www.lynda.com/learning-paths/Web/become-a-ruby-on-rails-developer
+
+=======================================
+cms- >>view/hello.html.erb 
+
+=begin%>
+  
+  params[:desig]
+  params[:name]
+  params[:email]..and we want to save it in a data base
+  
+INSERT IN THE DATABASE PAIN IN THE ASS
+	subject = Subject.new({:designation => params[:desig], :name => params[:name], :email => params[:email] } )
+	that is not a good way it is tedious to build up that hash by grabing each parameter by name
+
+so suppose if we have 50 inputs fields in our  form then !!  na karo raja G
+	
+	solution HTML Form arrYS
+
+	<form action='/subjects' method='post'>
+		<input type="text" name="subject[desig]"/>
+		<input type="text" name="subject[name]"/>
+		<input type="text" name="subject[email]"/>
+
+		<input type="submit" value="Create Subject"/>
+	</form>
+now we have
+	params[:subject][:desig]
+  	params[:subject][:name]
+  	params[:subject][:email]
+
+INSERT IN THE DATA BASE NOW 
+subject = Subject.new(params[:subject]) its that easy!!!  na kr qasam kha 
+params[:subject] = {:desig => 'coder hai bahi', :name =>'umer' , :email => 'lala@blog.com' }
+now we no longer have to built hash ourselves form does it for us 
+
+
+local code block variable |f| is a form builder object and its knows subject
+pros is it save object then update else new  action 
+if its exist it will prepopulate the fields with the existing values
+
+<%= form_for(@subject) do |f| %>
+	<%= f.text_field(:desig) %>
+	<%= f.text_field(:name) %>
+	<%= f.text_field(:email) %>
+	
+	<%= f.submit("Create Subject") %>
+#56
+	but bad news this is called mass assignment 
+	Subject.new(params[:subject]) because we are just dumping the into the object 
+	consider this exaple 
+	@user.update_attributes({:username => "zair"})
+	but hacker able to replace fake version of a form that have extra fields show up in our form parameters 
+	@user.update_attributes({:username => "zair",:password => "notsecret", :admin => true})
+
+	rails v1 and v2 : blacklisting of attributes
+	rails v3 : whitelisting of attributes
+	rails v4-5: strong parameters
+
+	params.permit(:name, :email) white listing means that two only available for mass assignment and others are not 
+	params.require(:subject) ensure that parameter is present not permiting just to sure value is there
+
+	params.require(:subject).permit(:name, :position, :visible)
+
+
+
+<% end %>
+
+<%
+=end%>

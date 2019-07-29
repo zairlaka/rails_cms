@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Simple CMS: <%= @page_title || "Admin Area" %></title>
+        <%= stylesheet_link_tag('admin', :media => 'all') %>    
+    </head>
+    <body>
+
+        <div id="header">
+            <h1>Simple CMS Admin </h1>
+        </div>
+        <div id="main">
+            <!-- after yeild --->
+            <div id="content">
+                <%= yield %>    
+            </div>
+            <!-- after yeild --->
+        </div>
+        <div id="footer">
+            <p id="copyright"> &copy; cms.com </p>
+        </div>
+    </body>
+</html>

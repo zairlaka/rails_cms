@@ -12,5 +12,7 @@
  *
  * require_tree .
  *= require primary 
+ *= require admin_additions
+ * now we have two different manifist files and i can choose which one i want to load in     
  *= require_self
  */

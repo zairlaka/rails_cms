@@ -58,7 +58,7 @@ if its exist it will prepopulate the fields with the existing values
 	<%= f.text_field(:email) %>
 	
 	<%= f.submit("Create Subject") %>
-
+#56
 	but bad news this is called mass assignment 
 	Subject.new(params[:subject]) because we are just dumping the into the object 
 	consider this exaple 

@@ -7,4 +7,12 @@ class Page < ApplicationRecord
     has_and_belongs_to_many :admin_users, :join_table => 'admin_users_pages'
     #we can specify the join table if we do not follow rails convention
 
+    scope :visible , lambda {where(:visible => true) }
+    scope :invisible , lambda { where(:visible => false) }
+    scope :sorted , lambda { order("position ASC") }
+    scope :newest_first , lambda { order(:created_at => :desc ) }
+    scope :search , lambda { |query| where(["name LIKE ?", "%#{query}%"] ) }
+
+
+    validates_presence_of :name
 end

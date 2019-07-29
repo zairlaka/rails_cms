@@ -1,6 +1,30 @@
 Rails.application.routes.draw do
   
+  # get 'sections/index'
+  # get 'sections/show'
+  # get 'sections/new'
+  # get 'sections/delete'
+  # get 'sections/edit'
+
+  resources :sections do
+    member do
+      get :delete
+    end 
+  end 
+  # get 'pages/index'
+  # get 'pages/show'
+  # get 'pages/new'
+  # get 'pages/edit'
+  # get 'pages/delete'
+  resources :pages do
+    member do
+      get :delete
+    end 
+  end 
+  
   root 'demo#index' #no need to write demo/index only demo will do fine
+
+
   
   # get 'subjects/index'
   # get 'subjects/show'
