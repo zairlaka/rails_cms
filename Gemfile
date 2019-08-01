@@ -2,9 +2,16 @@ source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.4.6'
-
+#The bcrypt Ruby gem provides a simple wrapper for safely handling passwords.
+gem 'bcrypt', '~> 3.1', '>= 3.1.12'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.3'
+# It allows you to create seed data files from the existing data in your database.
+# rake db:seed:dump APPEND=true
+# rake db:seed:dump MODELS=User
+# rake db:seed:dump FILE=db/seeds/users.rb
+# SeedDump.dump(User, file: 'db/seeds.rb', append: true)
+gem 'seed_dump'
 # Use mysql as the database for Active Record
 gem 'mysql2', '>= 0.4.4', '< 0.6.0'
 # Use Puma as the app server

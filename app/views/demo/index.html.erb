@@ -15,3 +15,16 @@
 <br />
 
 <%= link_to('roar', '#', :onclick => "jsRoar('JavaScript'); return true;") %>
+
+<% flash.each do |key, value| %>
+ <%= content_tag(:div, class: "alert alert-#{key} alert-dismissable") do %>
+  <%= value %>
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>   
+ <% end %> 
+<% end %>
+
+
+code in the controller:
+
+flash[:success] = "All good!"
+format.html { redirect_to some_path}

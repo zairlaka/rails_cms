@@ -1,7 +1,10 @@
 class SubjectsController < ApplicationController
   layout 'admin'
+  
+  before_action :confirm_logged_in #see the applicationController 
+
   def index ################################################################
-    @subjects = Subject.sorted  #used lambda scope subject model
+    @subjects = Subject.sorted  #used lambda scope subject model instead of Subject.all return randomly we want to return in sorted order
     @page_title = "All Subject"
     #render('index') rails is smart no need for extra line to rails automatically go to index page of subject
   end

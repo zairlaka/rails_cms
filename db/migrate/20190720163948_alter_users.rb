@@ -14,7 +14,7 @@ class AlterUsers < ActiveRecord::Migration[5.2]
   end
 
   def down 
-    remove_index :admin_users, :username   
+    # remove_index :admin_users, :username   
     #Ex:- add_index("admin_users", "username")
     rename_column :admin_users, :hashed_password, :password
     #Ex:- rename_column("admin_users", "pasword","hashed_pasword")

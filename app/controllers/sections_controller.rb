@@ -1,5 +1,7 @@
 class SectionsController < ApplicationController
   layout 'admin'
+  before_action :confirm_logged_in #see the applicationController 
+
   def index
     @sections = Section.all
   end
@@ -17,7 +19,7 @@ class SectionsController < ApplicationController
   def create
     @section = Section.new(section_params)
 
-    if @section.create
+    if @section.save
       flash[:notice] = "Section Created Successfully"
       redirect_to sections_path
     else

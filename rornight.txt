@@ -1165,7 +1165,348 @@ call with a custom helper
 error_messages_for(:object)
 
 validates_presence_of :name
- 
+
+#78###########################################
+
+CSRF (Cross-Site Request Forgery)
+type of an attack a website
+Exploits user's currently logged-in state to perform actions which require authentication
+you close the browser without logging out hacker could send you this image and you not know that it send request 
+to your bank
+<img src="http://bank.com/transfer?amt=10000&to=hacker" />
+
+PREVENT CSRF
+-require user authentication
+-Regularly log out inactive useres
+-GET requests should be read-only
+-Actions that expect POST requests should only respond to POST requests.
+
+<form action="/subject/create" method="post">
+   <input name="authenticity_token" type="hidden" value="DVSsdfdffs3DSF34" />
+   #form fields
+</form>
+
+rails automaitcally add this hidden field in our form that generate from its form helpers 
+and save it into your session too smart move so when a user something send it matches that it is valid form request and from valid user 
+samrt move aan
+
+our all controller inherit from ApplicationController
+
+one more point here if you want to work with JS and AJAX request 
+you need to have 
+<%= csrf_meta_tag %>
+tokken in your head of your hmtl page
+
+#79###########################################
+VALIDATIONS METHODS 
+
+- ensure data meets requirements before saving to database
+- we could validate our code in controller but this is not the good approach for specific action only 
+  it much better that we enforce them globally 
+- validation code resides in models
+- ActiveRecord::Validations
+
+methods 
+
+validates_presence_of :name (sould not be nil,false,""," ",[],{}) :message =>"can't be blank" that you can customize 
+validates_length_of (:is, :minimum, :maximum, :within, :in) :too_short , too_long, :wrong_length => "is the wrong lengthg (shoud be {{count}} charactrers)"
+validates_numericality_of (must be integer or floating :equal_to :greater_than, :less_than, :greater_than_or_equal_to, :less_than_or_equal_to, :odd, :even, only_integer
+validates_inclusion_of (attribute must be in a list of choices (array or range) :in 
+validates_exclusion_of (opposite of above) :message => "is reserved"
+validates_format_of (attribute must match a regular expression) :with :message => "is invalid"
+validate_uniqueness_of (attribute must not exit in the database) :case_sensitive :scope :message => "has already been taken"
+validete_acceptance_of (must checkbox check  like terms of condition virtual attribute not gonna save in database) :accept by default '1' :message => must be accepted
+validate_confirmation_of (must be confirmed by entering it twice virtual attribute email or password confirmation) only run this validation when you have confimation on your form else it would be skiped  :message => doesn't match
+
+validate_associated activeRecord association dependency 
+- Associated object or objects - must all be valid
+- First argument: association name; not attribute 
+- does not fail if object does not exist 
+- beware of infinit loops and long cascades
+Options 
+:allow_nill => true
+:allow_blank => true  
+
+:on => :save/ :create /:update  (on save this for both cases create and update)  
+:if => :method/ :unless =>:method  
+:method -- a method defined in the model that should return true or false
+
+#80###########################################
+write validation
+
+what to validate ? decide what good or bad data looks like 
+what restrictions does your database impose?? field types, field length, and null allowed 
+what would stop you application from working??
+
+    validates_presence_of :email
+    validates_length_of :email, :maximum => 100
+    validates_format_of :email, :with => EMAIL_REGEX
+    validates_confirmation_of :email
+
+s = Subject.new
+s.errors
+s.errors.count
+s.valid? output blank every time s.valid? call it update the s.errors
+all activeRecord objects have this model 
+
+s.email = "zair@blog.com"
+s.email_confirmation = "umer@blog.com"
+s.valid? output false message Email confirmation doesn't match Email 
+
+#81###########################################
+VALIDATES METHODS
+short methods to do the same things as above also called
+sexy validations 
+    validates_presence_of :email
+    validates_length_of :email, :maximum => 100
+    validates_format_of :email, :with => EMAIL_REGEX
+    validates_confirmation_of :email
+like this
+validates :email :presence => true,
+		 :length => { :maximum => 50},
+		 :uniqueness => true, 
+		 :format => { :with => EMAIL_REGEX },
+	 	 :confirmation => true
+
+validates :attributes,  :presence => boolean,
+			:numerically => boolean,
+			:length => options_hash
+			:format => {:with => regex},
+			:inclusion => {:in => array_or_range}, # or you can dirsect send array and skip the :in 
+			:exclusion => {:in => array_or_range},
+			:acceptane => boolean,
+			:uniqueness => booleanm
+			:confirmation => boolean
+
+#82###########################################
+CUSTOM VALIDATIONS
+
+validate : custom_method
+
+private
+
+def custom_method
+	if test_case 
+		errors.add(:attribute, "message")
+	end
+end
+implemetn in admin_user.rb
+all in one model
+FORBIDDEN_USERNAME = ['fucker','mary','santa'] # just for sake of demonstration
+validate :username_is_allowed # custom validation
+private
+
+def username_is_allowed
+    if FORBIDDEN_USERNAME.include?(username)
+        errrors.add(:username, "has been restricted from use.") use :base if you don't want to or have variable name in your message
+    end
+end
+
+#83###########################################
+COOKIES
+web is a stateless environment 
+web server doesn't know the previous record 
+cookies help us here allow us to preserve "state"
+web server sends data to the browser to save data in cookies 
+Browser sends cookie data with each future request to the web server
+
+cookies[:username] = "zair"
+cookies[:username] = {
+	:value => "zair",
+	:expires => 1.week.from_now
+}
+
+<%= cookies[:username] %>
+
+maximum size is 4K 4000 characters 
+resides on the user's computer 
+
+should be preserve state and save time 
+store only small pieces of data
+do not store sensitive data 
+do not trust cookie data 
+
+
+#84###########################################
+SESSIONS
+help us to address the same problem that cookies do
+the way session works web server sends a session ID to the browser, which then saves it in a cookie 
+so session use cookies to do their job
+browser sends session ID with each future request to that web server
+then web server uses session ID to locate the session file 
+session store in server side 
+
+session[:username] = "jsmith"
+<%= session[:username] %>
+
+Limitations of sessions 
+Require time to retrieve the session file
+session files accumulate over time every time a new user arrive to the site web server generate session for him
+either in a file or store in database
+session cookie can be deleted or hijacked can be steal session id and pretend to be that user 
+
+session storage
+*file storage 
+*database storage 
+*cookie storage in rails 3 
+default since rails 3
+super cookie (encrypted to prevent reading  , signed to prevent tampering, 4k maximum size )
+fast, no lookup needed
+no setup required 
+no file or database bloat
+
+session storage configuration 
+
+config/initialzers/session_store.rb
+config/secrets.yml
+
+#85###########################################
+CONTROLLER FILTERS
+
+execute code before or after a controller aciton 
+filter request before allowing acitons
+remove code repetition 
+perform "housekeeping" tasks 
+
+Usages 
+confirm user authentication 
+set variables and default values 
+find database objects 
+get shopping cart 
+
+before_action 
+after_action
+around_action (combo of above two)
+
+before_action :find_subjects , :only => [:new, :create, :edit, :update]
+
+private def find_subjects 
+ @subjects = Subject.sorted 
+end
+
+
+filter mehtod should be declared "private"
+any render or redirect before an action prevents its execution.
+specify which actions activate the filter with:
+:only => [:index, :new]
+:except => [:edit, :delte]
+
+filters in ApplicationController are inherited by all controllers
+inherited filter can be skipped 
+skip_before_aciton 
+skip_after_aciton
+
+#86###########################################
+
+LOGGING
+Sever Logs vs Application Logs 
+basic request data and the error which occur before the rails application are going to show in server logs 
+but web server only know about the request the send in and the data it sends back 
+once he send the error to rails application the rest will remain mystry for web server 
+
+log/development.rb
+log/production.rb
+log/test.rb
+
+log level configuration
+development.rb 
+config.log_level = :debug , :info , :warn, :error , :fatal
+production.rb 
+config.log_level = :info 
+
+rails log:clear
+
+logger.debug(" ### the name is #{@Subject.name} ###")
+
+
+#87###########################################
+AUTHENTICATION INTRODUCTION
+
+like admin can only see the page of all users list 
+
+why authentication??
+password-protected areas are commen
+examining best pracitces helps avoid costly mistakes
+development choices and security concernse intertwined
+opportunity to explore some important feature in rails 
+
+if the password is match 
+sets session varitable to the user ID
+redirect to a post-login page 
+if the user want to access password protected pages then
+session data available with each request
+Log out 
+set user ID stored in session variable to NULL
+
+
+#88###########################################
+SECURE PASSWORDS
+
+encrypting passwords 
+never store passwords in plain text
+
+one way encryptions 
+rails uses Blowfish 
+
+has_secure_password 
+prerequisites 
+bcrypt gem installed 
+column in database 'password_digest'
+
+has_secure_password 
+attr_reader :password 
+validates_presence_of :password, :on => :create
+validates_confirmation_of :password 
+
+def authenticate(unencrypted_password) #magic methods that will available to us 
+end
+
+u = Admin.first
+u.password_digest = "zair"
+=> "$jerkltj34534er" #encrypted string
+u.save 
+=> false email is blank 
+u.save true 
+u.authenticate("zairUmer")  false
+
+#89###########################################
+create user access like devise
+  get 'access/menu' #index
+  get 'access/login' #new
+  post 'access/attemp_login' # create
+  get 'access/logout' #destroy
+  
+  get 'admin', :to => 'access#menu'
+
+#90###########################################
+LOGIN AND LOGOUT
+
+#91###########################################
+RESTRICT ACCESS
+
+*Add before_action to each controller
+Be careful not to forget any 
+*Move before_action to ActionController
+must skip_before_action in public controller
+*Create AdminAreaController
+
+before_action :confirm_logged_in #see the applicationController 
+
+private
+  
+  def confirm_logged_in
+    unless session[:user_id]
+      flash[:notic] = "Please Login"
+       redirect_to(access_login_path) 
+       #we want not to show any other controller action unless user is login 
+       #if that is the case we should move this to our main applicationController and 
+       #add this line there before_action :confirm_logged_in, :except => [:login, :attempt_login, :logout]
+    end
+  end
+
+#92###########################################
+
+
 ===================================================================================
 gem install mysql2 -- --with-mysql-config="D:\server\mysql\bin" --with-mysql-include="D:\server\apache2\include" --with-mysql-lib="D:\server\apache2\lib"
 \q: Quit/Exit.
@@ -1184,7 +1525,9 @@ but look, if at some point you got lied to, it's because you agree to get lied t
 lying's is a coperative act"
 
 everyone is willing to give you something 
-they are ready to give you something for whatever it is they're hungry for. and that is the crux of it
+they are ready to give you something for whatever it is, they're hungry for. and that is the crux of it
+
+
 
 ===================================================================================
 Go to: https://www.lynda.com/portal/sip?org=houstonlibrary.org
@@ -1260,3 +1603,108 @@ if its exist it will prepopulate the fields with the existing values
 
 <%
 =end%>
+
+
+1-Welcome	
+2-How to use the exercise files	
+3-Ruby on Rails introduction	
+4-Understanding MVC architecture	
+5-Create a project	
+6-Configure a project	
+7-File structure of a project	
+8-Access a project	
+9-Generate a controller and view	
+10-Server request handling	
+11-Routes	
+12-Experiment on your own	
+13-Render a template	
+14-Redirect actions	
+15-View templates	
+16-Instance variables	
+17-Links	
+18-URL parameters	
+19-Introduction to databases	
+20-Create a database	
+21-Migrations	
+22-Generate migrations	
+23-Generate models.mp4	
+24-Run migrations	
+25-Migration methods	
+26-Solve migration problems	
+27-Challenge - Migrations for the CMS	
+28-Solution - Migrations for the CMS	
+29-ActiveRecord and ActiveRelation	
+30-Model naming	31-Model attributes	
+32-The Rails console	
+33-Create records	
+34-Update records	
+35-Delete records	
+36-Find records	
+37-Query methods - Conditions	
+38-Query methods - Order, limit,  and offset	
+39-Named scopes	40-Relationship types	
+41-One-to-one associations	
+42-One-to-many associations	
+43-belongs_to presence validation	
+44-Many-to-many associations - Simple	
+45-Many-to-many associations - Rich	
+46-Traverse a rich association	
+47-CRUD	48-REST	49-Resourceful routes	
+50-Resourceful URL helpers	
+51-Read action - Index	
+52-Read action - Show	
+53-Form basics	
+54-Create action - New	
+55-Create action - Create	
+56-Strong parameters	
+57-Update actions - Edit_update	
+58-Delete actions - Delete_destroy	
+59-Flash hash	
+60-Challenge - Pages and sections CRUD	
+61-Solution - Pages and sections CRUD	
+62-Layouts	
+63-Partial templates	
+64-Text helpers	
+65-Number helpers	
+66-Date and time helpers	
+67-Custom helpers	
+68-Sanitization helpers
+69-Asset pipeline	
+70-Stylesheets
+71-JavaScript
+72-JavaScript tag and sanitizing
+73-Images
+74-Form helpers
+75-Form options helpers
+76-Date and time form helpers
+77-Form errors
+78-Prevent cross-site request forgery
+79-Validation methods
+80-Write validations
+81-Validates method
+82-Custom validations
+83-Cookies
+84-Sessions
+85-Controller filters
+86-Logging
+87-Authentication introduction	
+88-Secure passwords
+89-Create a controller for access
+90-Login and logout.
+91-Restrict access	
+92-Challenge - AdminUser CRUD	
+3-Solution - AdminUser CRUD	
+94-Public area	95-Public area navigation	
+96-Nesting pages in subjects	
+97-Nesting sections in pages	
+98-Adding RubyGems - acts_as_list	
+99-Finishing touches
+100-Next steps	
+
+{
+
+[IMPORTANT NOTES]
+If you're using something like memcached, restarting that may also be helpful
+rails g controller AdminUsers index, edit, new, delete must be plural because we working with resource that more then one 
+
+}
