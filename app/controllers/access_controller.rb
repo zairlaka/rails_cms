@@ -7,6 +7,8 @@ class AccessController < ApplicationController
 
   def menu
     # display text and links 
+    @username = session[:username]
+    #we can one way is we can make trip to database via userid but this is expensive 
   end
 
   def login
@@ -23,6 +25,7 @@ class AccessController < ApplicationController
     end
     if authorized_user #if we find the autherize user then we set a session for it 
       session[:user_id] = authorized_user.id
+      session[:username] = authorized_user.username
       flash[:notice] = "You are now Logged in."
       redirect_to(admin_path)
     else
@@ -34,6 +37,7 @@ class AccessController < ApplicationController
   end
   def logout
       session[:user_id] = nil 
+      session[:username] = nil
       flash[:notice] = "Logged out"
       redirect_to(access_login_path)
   end

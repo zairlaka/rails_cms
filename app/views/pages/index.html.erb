@@ -1,18 +1,19 @@
+<% @page_title = "All Pages" %>
 
+<%= link_to("<< Back to Subjects", subjects_path, :class => 'back-link') %>
 <div class="pages index">
   <h2>Pages</h2>
 
   <%# link_to("Add New Subject", 'subjects/new', :class => 'action new') %>
-  <%= link_to("Add New Page", new_page_path , :class => 'action new') %>
+  <%= link_to("Add New Page", new_page_path(:subject_id => @subject.id) , :class => 'action new') %>
 
   <table class="listing" summary="page list">
     <tr class="header">
-      <th>#</th>
+      <th>Position</th>
       <th>Subject ID</th>
       <th>Page</th>
       <th>Permalinks</th>
       <th>Visible</th>
-      <th>Position</th>
       <th>Sections</th>
       <th>Actions</th>
     </tr>
@@ -23,14 +24,16 @@
       <td><%= page.name %></td>
       <td><%= page.permalink %></td>
       <td class="center"><%= status_tag(page.visible) %></td>
-      <td><%= page.position %></td>
       <td class="center"><%= page.sections.size %></td>
       <td class="actions">
         <%# link_to("Show", 'subjects#{subject.id}', :class => 'action show') %>
         <%# link_to("Show", {:controller => 'subjects' , :action => 'show', :id => subject.id }, :class => 'action show') %>
-        <%= link_to("Show", page_path(page), :class => 'action show') %>
-        <%= link_to("Edit", edit_page_path(page), :class => 'action edit') %>
-        <%= link_to("Delete", delete_page_path(page), :class => 'action delete') %>
+        <%# link_to("View Sections", sections_path(:subject_id => @subject.id , :page_id => page.id), :class => 'action show') %>
+        <!-- above here  that is my approach but we get the subject by the page because page has also a subject id --->
+        <%= link_to("View Sections", sections_path(:page_id => page.id), :class => 'action show') %>
+        <%= link_to("Show", page_path(page, :subject_id => @subject.id), :class => 'action show') %>
+        <%= link_to("Edit", edit_page_path(page, :subject_id => @subject.id), :class => 'action edit') %>
+        <%= link_to("Delete", delete_page_path(page, :subject_id => @subject.id), :class => 'action delete') %>
       </td>
     </tr>
     <% end %>

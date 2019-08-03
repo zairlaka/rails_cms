@@ -1,5 +1,7 @@
 class Subject < ApplicationRecord
 
+    acts_as_list #gem 
+
     has_many :pages
 
     #scope lambda syntax

@@ -1,9 +1,9 @@
-<%= link_to("<< Back to List", pages_path, :class => 'back-link') %>
+<%= link_to("<< Back to List", pages_path(:subject_id => @subject.id), :class => 'back-link') %>
 
 <div class="subjects edit">
   <h2>Update Page</h2>
 
-  <%= form_for(@page, :url => page_path, :method => 'patch') do |f| %>
+  <%= form_for(@page, :url => page_path(@page, :subject_id => @subject.id), :method => 'patch') do |f| %>
   <%# form_for(@subject) do |f| %>    <%#we dont have to specify them becuase you are post something and see rails route %>
 
     <%= render(:partial => "form" , :locals => {:f => f}) %>

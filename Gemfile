@@ -12,6 +12,8 @@ gem 'rails', '~> 5.2.3'
 # rake db:seed:dump FILE=db/seeds/users.rb
 # SeedDump.dump(User, file: 'db/seeds.rb', append: true)
 gem 'seed_dump'
+#
+gem 'acts_as_list', '~> 0.7.6' # ~> this means that latest gem with minor change could be okey but not major changes like 0.8 0.7.9 is okey tough 
 # Use mysql as the database for Active Record
 gem 'mysql2', '>= 0.4.4', '< 0.6.0'
 # Use Puma as the app server

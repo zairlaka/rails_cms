@@ -1,9 +1,11 @@
 class PagesController < ApplicationController
   layout 'admin' #by default use application.html.erb 
   
+  
+
   before_action :confirm_logged_in #see the applicationController 
 
-  befoer_action :find_subject
+  before_action :find_subject
   before_action :find_subjects , :only => [:new, :create, :edit, :update]# @subjects =  Subject.sorted
   before_action :set_page_count , :only => [:new, :create, :edit, :update]# @subjects =  Subject.sorted
 
@@ -16,8 +18,9 @@ class PagesController < ApplicationController
   end
 
   def new
-    @page = Page.new({:name => "Default"})
-    @page_count = Page.count + 1
+    # @page = Page.new({:name => "Default"})
+    @page = Page.new(:subject_id => @subject.id, :name => "Default")
+    
     # @subjects =  Subject.sorted #no need any more because we have aciton filter for that 
   end
 
@@ -26,9 +29,8 @@ class PagesController < ApplicationController
 
     if @page.save
       flash[:notice] = "Page is successfully Created"
-      redirect_to(pages_path)
+      redirect_to(pages_path(:subject_id => @subject.id))
     else 
-      @page_count = Page.count + 1
       # @subjects =  Subject.sorted
       render 'new'
   end
@@ -36,7 +38,7 @@ end
 
   def edit
     @page = Page.find(params[:id])
-    @page_count = Page.count
+    # @page_count = Page.count
     # @subjects =  Subject.sorted
   end
 
@@ -45,9 +47,9 @@ end
 
     if @page.update_attributes(page_params)
       flash[:notice] = "Page is successfully updated"
-      redirect_to(page_path(@page))
+      redirect_to(page_path(@page, :subject_id => @subject.id))
     else
-      @page_count = Page.count
+      # @page_count = Page.count
     # @subjects =  Subject.sorted
       render('edit')
   end
@@ -62,7 +64,7 @@ end
 
     @page.destroy
     flash[:notice] = "Page is successfully Deleted"
-    redirect_to(pages_path)
+    redirect_to(pages_path(:subject_id => @subject.id))
 
   end
 
@@ -79,7 +81,10 @@ end
     @subjects =  Subject.sorted
   end
   def set_page_count
-    @page_count = Page.count
+    # i am creating a new section and it gives me a position for select out of 7 
+    # but on that page i have only two how to tackle this and it is important that we have find_subject action before this 
+    #@page_count = Page.count
+    @page_count = @subject.pages.count
     if params[:action] ==  'new' || params[:action] == 'create'
       @page_count += 1
     end

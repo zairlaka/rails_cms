@@ -1,5 +1,7 @@
 class Page < ApplicationRecord
     
+    acts_as_list :scope => :subject  # gem means there if we set there are 3 subject 1 a 2 c 3 b if i change the c 3  it will automatically change the b 2 and it becomes 1 a 2 b 3 c
+
     # subject father 
     belongs_to :subject , { :optional => false } # make it false if you want to add page without a parent object subject 
     #make it false it prevent to add orphan recored in your database that not belongs to any object

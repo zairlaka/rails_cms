@@ -1515,6 +1515,59 @@ we are expecting array of subjects that we can go trough but if somereason we do
 <% subject.pages.visible.sorted.each do |page| %>
       <li><%= link_to_unless_current(page.name, public_show_path(page.permalink)) %></li>
       <!-- so smart of rails -->
+#96###########################################
+(:subject_id => @subject.id) 
+in every redirect and form
+<%= form_for(@page, :url => pages_path(:subject_id => @subject.id), :method => 'post') do |f| %>
+we want to track subject.id 
+
+#97###########################################
+a good case see in section form view 
+
+<td><%= f.select(:page_id, @pages.map {|s| [s.name, s.id]}) %></td>
+        <!-- 
+          we have three options here in edit or new 
+          user can choose the page and jump around 
+          we can disable this options 
+          we can remove and show a page name only because user go to that specific subject and then specific page and then can create the section 
+          so i think it is good option for remove it at all and replace select tag with this one below but personally i dont want to :) badmashi
+          
+          
+          -->
+        <!-- f.object.page.name 
+            and this is not just it we no have to remove this by params list because it is not going from form any more page or subject 
+            so we have to mention in give subject id or page id at creataion of new page or section in controller 
+            like @page.subject_id = @subject.id     or in short form 
+            @page.subject = subject     do the work for us       and can remove a before action :find_subjects  that is there for select option 
+            
+            now i am changing my mind because we have to hit data base just for this or i have a new approach why not i do pass the subjects parameters 
+            but i think then i have to maintain the status of it 
+        
+        -->
+#98###########################################
+i am creating a new section and it gives me a position for select out of 7 
+but on that page i have only two how to tackle this 
+def set_page_count
+    #@page_count = Page.count
+    @page_count = @subject.pages.count
+    if params[:action] ==  'new' || params[:action] == 'create'
+      @page_count += 1
+    end
+  end
+this will solve the problem but now position can be repeatable  means there can be two pages with the same position how we prevent that 
+one solution is client side and server side validation but this is not the good approach because then user have to try every one of the position to see which is free 
+
+best practice is that if its is common problem then you should look for gem
+there are some of the gem 
+
+act_as_list  		manage objects with positions 
+will_pagination  	pagination
+exeption_notificaion	send email when errors occur
+paperclip		manage file uploaded via web forms
+carrierwave		manage file uploaded via web forms
+delayed_job 		Queue tasks to run later
+friendly_id 		Semantic URL
+acitivemerchant		credit card processing
 
 ===================================================================================
 gem install mysql2 -- --with-mysql-config="D:\server\mysql\bin" --with-mysql-include="D:\server\apache2\include" --with-mysql-lib="D:\server\apache2\lib"
@@ -1713,7 +1766,10 @@ if its exist it will prepopulate the fields with the existing values
 {
 
 [IMPORTANT NOTES]
-If you're using something like memcached, restarting that may also be helpful
-rails g controller AdminUsers index, edit, new, delete must be plural because we working with resource that more then one 
+# If you're using something like memcached, restarting that may also be helpful
+# after adding a gem it is good practice to restart you rails server
+# rails g controller AdminUsers index, edit, new, delete must be plural because we working with resource that more then one 
+# u have to mention explicitly in form method delete <%= form_for(@section, :url => section_path(@section), :method => 'delete') do |f| %> 
+
 
 }

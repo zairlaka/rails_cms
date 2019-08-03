@@ -6,8 +6,27 @@
         <td><%= f.text_field(:name) %></td>
       </tr>
       <tr>
-        <th>Page ID</th> 
+        <th>Page</th> 
         <td><%= f.select(:page_id, @pages.map {|s| [s.name, s.id]}) %></td>
+        <!-- 
+          we have three options here in edit or new 
+          user can choose the page and jump around 
+          we can disable this options 
+          we can remove and show a page name only because user go to that specific subject and then specific page and then can create the section 
+          so i think it is good option for remove it at all and replace select tag with this one below but personally i dont want to :) badmashi
+          
+          
+          -->
+        <!-- f.object.page.name 
+            and this is not just it we no have to remove this by params list because it is not going from form any more page or subject 
+            so we have to mention in give subject id or page id at creataion of new page or section in controller 
+            like @page.subject_id = @subject.id     or in short form 
+            @page.subject = subject     do the work for us       and can remove a before action :find_subjects  that is there for select option 
+            
+            now i am changing my mind because we have to hit data base just for this or i have a new approach why not i do pass the subjects parameters 
+            but i think then i have to maintain the status of it 
+        
+        -->
       </tr>
       <tr>
         <th>Position</th>
