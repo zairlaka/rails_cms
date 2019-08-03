@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Simple CMS: <%= @page_title || "Admin Area" %></title>
-        <%= stylesheet_link_tag('admin', :media => 'all') %>    
+        <title>Simple CMS<%= " | #{@page_title}" if @page_title %></title>
+        <%= stylesheet_link_tag('application', :media => 'all') %>    
     </head>
     <body>
 
@@ -10,15 +10,15 @@
             <h1>Simple CMS Admin </h1>
         </div>
         <div id="main">
-            <% if !flash[:notice].blank?  # its check for the nil but also for the empty strings %>
-                <div class= "notice">
-                    <%= flash[:notice] %>
-                </div>
-            <% end %>
+
+            <div id="navigation">
+                <%= render(:partial => 'layouts/navigation', :locals => { :subjects => @subjects }) %>
+            </div>
             <!-- after yeild --->
             <div id="content">
                 <%= yield %>    
             </div>
+            <div class="clear"></div>
             <!-- after yeild --->
         </div>
         <div id="footer">

@@ -1,0 +1,24 @@
+<%#                
+                Prefix Verb    URI Pattern                    Controller#Action
+                   root GET    /                                public#index
+                        GET    /show/:permalink(.:format)       public#show
+      admin_users_index GET    /admin_users/index(.:format)     admin_users#index
+we dont have any prefix for public#show we add it manually in routes
+%>
+<% @page_title = @page.name %>
+
+<h2><%= @page.name %></h2>
+
+<% @page.sections.visible.sorted.each do |section| %>
+
+<!-- we are getting only the visible section from that page -->
+  <div class="section">
+    <% case section.content_type %>
+    <% when 'HTML' %>
+      <%= raw(sanitize(section.content, :tags => ['strong', 'em', 'a','h1','h2', 'h3'])) %>
+    <% when 'Text' %>
+      <%= simple_format(section.content) %>
+      <!-- simple format adds p tags and changing \n from br tags -->
+    <% end %>
+  </div>
+<% end %>

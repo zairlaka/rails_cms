@@ -1,13 +1,12 @@
-AdminUser.create!([
-  {first_name: "zair", last_name: "umer", email: "zair@gmail.com", username: "vampire", password_digest: "$2a$12$YXB/6BitVs3Ir/qTwAfoxOJaEi7O8IjDtwuyVkt4pJVN2barMl/9S"}
-])
 
+AdminUser.create!([
+  {first_name: "zair", last_name: "umer", email: "zair@gmail.com", username: "vampire", password: "pass"}
+])
 Subject.create!([
   {name: "Programming", position: 1, visible: true},
   {name: "cooking", position: 2, visible: false},
   {name: "Cyberpunk", position: 3, visible: true}
 ])
-
 Page.create!([
   {subject_id: 1, name: "Ruby On Rails", permalink: "ROR", position: 1, visible: true},
   {subject_id: 1, name: "React", permalink: "Rjs", position: 2, visible: true},
@@ -15,7 +14,6 @@ Page.create!([
   {subject_id: 3, name: "Optimize", permalink: "optimize", position: 4, visible: true},
   {subject_id: 2, name: "Biryani", permalink: "food", position: 5, visible: false}
 ])
-
 Section.create!([
   {page_id: 3, name: "why combination", position: 1, visible: true, content_type: "Text", content: "\"username or password is invalid\" why not to be specific."},
   {page_id: 4, name: "dot first", position: 2, visible: true, content_type: "Text", content: "at the end of the find query is it worth it to put first like\r\nAdminUser.where(:username => params[:username]).first\r\nWhy?"},

@@ -1506,6 +1506,15 @@ private
 
 #92###########################################
 
+#95###########################################
+PUbLIC AREA NAVIGATION
+
+<% subjects ||= [] %>    default to emtpy array 
+we are expecting array of subjects that we can go trough but if somereason we don't have subjects default to emtpy array 
+
+<% subject.pages.visible.sorted.each do |page| %>
+      <li><%= link_to_unless_current(page.name, public_show_path(page.permalink)) %></li>
+      <!-- so smart of rails -->
 
 ===================================================================================
 gem install mysql2 -- --with-mysql-config="D:\server\mysql\bin" --with-mysql-include="D:\server\apache2\include" --with-mysql-lib="D:\server\apache2\lib"

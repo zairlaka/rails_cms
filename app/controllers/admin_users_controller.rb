@@ -5,7 +5,7 @@ class AdminUsersController < ApplicationController
   before_action :confirm_logged_in
 
   def index
-    @admin_user = AdminUser.sorted
+    @admin_users = AdminUser.sorted
   end
 
   def new
@@ -13,10 +13,10 @@ class AdminUsersController < ApplicationController
   end
 
   def create
-    @admin_user = Adminuser.new(admin_user_params)
+    @admin_user = AdminUser.new(admin_user_params)
     if @admin_user.save
       flash[:notice] = "Admin User Created Successfully."
-      redirect_to(admin_user_path)
+      redirect_to(admin_users_path)
     else
       flash.now[:notice] = "could not created"
       render('new')
@@ -53,6 +53,6 @@ class AdminUsersController < ApplicationController
   private
   
   def admin_user_params
-    params.require(:admin_user).permit(:first_name, :last_name, :email, :username, :password) #password is virtual here 
+    params.require(:admin_user).permit(:first_name, :last_name, :email, :username, :password) #password is virtual here permit :password, but not :password_digest
   end
 end

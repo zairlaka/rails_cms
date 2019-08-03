@@ -3,15 +3,16 @@ class PagesController < ApplicationController
   
   before_action :confirm_logged_in #see the applicationController 
 
+  befoer_action :find_subject
   before_action :find_subjects , :only => [:new, :create, :edit, :update]# @subjects =  Subject.sorted
   before_action :set_page_count , :only => [:new, :create, :edit, :update]# @subjects =  Subject.sorted
 
   def index
-    @pages = Page.sorted #return all but sorted lambda scope 
+    @pages = @subject.pages.sorted #return all but sorted lambda scope 
   end
 
   def show
-    @page = Page.find(params[:id])
+    @page = @subject.pages.find(params[:id])
   end
 
   def new
@@ -71,6 +72,9 @@ end
     params.require(:page).permit(:subject_id, :name ,:permalink,:position, :visible)
   end
 
+  def find_subject
+    @subject = Subject.find(params[:subject_id])
+  end
   def find_subjects
     @subjects =  Subject.sorted
   end
