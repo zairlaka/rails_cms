@@ -1559,7 +1559,7 @@ one solution is client side and server side validation but this is not the good 
 
 best practice is that if its is common problem then you should look for gem
 there are some of the gem 
-
+ 
 act_as_list  		manage objects with positions 
 will_pagination  	pagination
 exeption_notificaion	send email when errors occur
