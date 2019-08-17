@@ -7,11 +7,12 @@ we dont have any prefix for public#show we add it manually in routes
 %>
 <% @page_title = @page.name %>
 
-<h2><%= @page.name %></h2>
+<h2 align='center'><%= @page.name %></h2>
 
 <% @page.sections.visible.sorted.each do |section| %>
 
 <!-- we are getting only the visible section from that page -->
+<b><%= section.name %></b>
   <div class="section">
     <% case section.content_type %>
     <% when 'HTML' %>

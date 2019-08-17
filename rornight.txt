@@ -453,7 +453,7 @@ first_page have pageid and subject id is nil
 s = Subject.find(2)
 first_page = Page.new(:name => "First Page", :permalink => 'first' :postion => 1)
 s.pages << first_page
-but now it have it
+but now, it have it
 
 #43 belongs_to presence validation ###########################################
 change in rails 5.0
@@ -1218,6 +1218,9 @@ validate_uniqueness_of (attribute must not exit in the database) :case_sensitive
 validete_acceptance_of (must checkbox check  like terms of condition virtual attribute not gonna save in database) :accept by default '1' :message => must be accepted
 validate_confirmation_of (must be confirmed by entering it twice virtual attribute email or password confirmation) only run this validation when you have confimation on your form else it would be skiped  :message => doesn't match
 
+
+
+
 validate_associated activeRecord association dependency 
 - Associated object or objects - must all be valid
 - First argument: association name; not attribute 
@@ -1230,6 +1233,9 @@ Options
 :on => :save/ :create /:update  (on save this for both cases create and update)  
 :if => :method/ :unless =>:method  
 :method -- a method defined in the model that should return true or false
+
+before_save { self.email = email.downcase }
+
 
 #80###########################################
 write validation
@@ -1763,6 +1769,14 @@ if its exist it will prepopulate the fields with the existing values
 99-Finishing touches
 100-Next steps	
 
+
+{
+[debuging]
+
+<%= debug(params) if Rails.env.development? %>
+
+}
+
 {
 
 [IMPORTANT NOTES]
@@ -1770,6 +1784,136 @@ if its exist it will prepopulate the fields with the existing values
 # after adding a gem it is good practice to restart you rails server
 # rails g controller AdminUsers index, edit, new, delete must be plural because we working with resource that more then one 
 # u have to mention explicitly in form method delete <%= form_for(@section, :url => section_path(@section), :method => 'delete') do |f| %> 
+# a.reverse! bang operator will change the origenal  array else not
+# (0..25).to_a create an array having no from 0 to 25 
+# y= (0..99).to_a.shuffle! creates but shuffle
+# ApplicationController if there are general methods which used in all your others controller or views over and over again like
 
 
 }
+
+[BEST PRACTICES]
+{
+# current_user, logged_in?, require_user etc define in Application controller and tell the rails that they are helper methods 
+# [ helper_method :current_user, :logged_in? ] in Application controller so rails available these mehtods in our views too
+def current_user
+	User.find(session[:user_id)] if session[user_id] // the problem is that whenever we want user object it will hit  database every time remedy to this is memoiztion 
+	@current_user ||= User.find(session[:user_id)] if session[user_id] // this is the optime approach we hit the database only the first time 
+end
+}
+[Associations RELATIONSHIP]
+{
++-----------------------------+
+|    select * from Subjects;  |
++----+-------------+----------+
+| id | name        | position |
++----+-------------+----------+
+|  1 | Programming |        1 |
+|  2 | cooking     |        3 |
+|  3 | Cyberpunk   |        2 |
++----+-------------+----------+
++---------------------------------+
+|	select * from pages;      |
++----+------------+---------------+
+| id | subject_id | name          |
++----+------------+---------------+
+|  1 |          1 | Ruby On Rails |
+|  2 |          1 | React         |
+|  3 |          3 | Security      |
+|  4 |          3 | Optimize      |
+|  5 |          2 | Biryani       |
++----+------------+---------------+
+----------------------------------------
+HAS_MANY AND BELONGS_TO (one to many)
+rails generate migration AddSubjectIdToPages subject_id:integer
+----------------------------------------
+class Subject < ApplicationRecord
+    has_many :pages #child
+end
+
+class Page < ApplicationRecord
+    # subject father #forgin key in page table always in belongs_to
+    belongs_to :subject , { :optional => false }  	# make it false if you want to add page without a parent object subject 
+end
+
+pg = Page.first		[retrun the first page]
+			#<Page id: 1, subject_id: 1, name: "Ruby On Rails">
+pg.subject 		[return the subject object which this page is belongs to]
+			#<Subject id: 1, name: "Programming", position: 1>
+
+sub = Subject.first 	[return the first subject]
+			#<Subject id: 1, name: "Programming", position: 1>
+sub.pages		[return the all pages which belongs to this subject]		
+			#<ActiveRecord::Associations::CollectionProxy [
+			#<Page id: 1, subject_id: 1, name: "Ruby On Rails">, 
+			#<Page id: 2, subject_id: 1, name: "React">]>
+sub.pages.count		=> 2
+pg.subject.pages.count  => 2    [we did the same thing but now from the Page object]
+----------------------------------------
+----------------------------------------
+HAS_MANY THROUGH (many to many)
+rails generate model Like user_id:integer product_id:integer
+----------------------------------------
+class Like < ActiveRecord::Base
+  belongs_to :user
+  belongs_to :product
+end
+
+class User < ActiveRecord::Base
+  has_many :likes
+  has_many :liked_products, through: :likes, source: :product   #has_many :products, through: :likes
+end
+
+class Product < ActiveRecord::Base
+  has_many :likes
+end
+
+prod1 = Product.first
+prod1.likes # returns prod1's likes
+user1 = User.first
+user1.likes #returns user1's likes
+user1.liked_products # returns user1's liked products
+----------------------------------------
+----------------------------------------
+HAS_ONE AND BELONGS_TO (one to one)
+rails generate migration AddUserIdToCarts user_id:integer
+----------------------------------------
+
+class User < ActiveRecord::Base
+  has_one :cart
+end
+
+class Cart < ActiveRecord::Base
+  # User father #forgin key in page table always in belongs_to
+  belongs_to :user
+end
+
+user1 = User.first
+user.cart # return's user1's cart
+cart1 = Cart.first
+cart1.user #return's cart1's user
+[NO Rocket Science Here]
+------------------------------------------
+
+
+}
+
+[ACTIVE RECORD]
+{
+==Product.where(quantity: 2..5)
+Sometimes, you'll need to pass in a string condition to .where which will be directly converted into SQL:
+==Product.where('quantity > 3')
+==Category.joins(:products)
+SELECT "products".* FROM "products" INNER JOIN "categories" ON "categories"."id" = "products"."category_id"
+
+==Product.joins(:category)	You can also run the query in reverse:
+==Product.joins(:category, :likes).uniq
+SELECT DISTINCT "products".* FROM "products" INNER JOIN "categories" ON "categories"."id" = "products"."category_id" INNER JOIN "likes" ON "likes"."product_id" = "products"."id"
+==Category.joins(:products).where(products: {quantity: 0})
+SELECT "categories".* FROM "categories" INNER JOIN "products" ON "products"."category_id" = "categories"."id" WHERE "products"."quantity" = ? [["quantity", 0]]
+==Category.joins(:products).where('products.quantity > 3')
+SELECT "categories".* FROM "categories" INNER JOIN "products" ON "products"."category_id" = "categories"."id" WHERE (products.quantity > 3)
+}
+
+for something  so bad to be so good
+and something so good to be so bad

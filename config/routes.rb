@@ -79,5 +79,10 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace 'api' do
+    namespace 'v1' do
+      resources :subjects,:pages,:sections
+    end
+  end
 
 end

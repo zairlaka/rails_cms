@@ -79,7 +79,9 @@ a.action.large {
   table {
     clear: both;
     width: 100%;
-    tr td { border: 1px solid #666666; }
+    box-shadow: 0px 0px 7px black;
+    margin: 20px;
+    tr td { border: 1px solid #FFFFFF;background: #62301cb8; }
   }
 }
 
@@ -103,8 +105,9 @@ span.status {
   display: block;
   width: 10px; height: 10px;
   margin: 0.25em auto; padding: 0;
-  border: 1px solid #000000;
-  &.true  { background: green; color: green; }
+  border: 1px solid #FFFFFF;
+  border-radius: 50%;
+  &.true  { background: #89ff00; color: green; }
   &.false { background: red; color: red; }
 }
 

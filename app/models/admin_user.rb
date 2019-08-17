@@ -32,7 +32,7 @@ class AdminUser < ApplicationRecord
 		 :format => { :with => EMAIL_REGEX },
 	 	 :confirmation => true
 
-    validate :username_is_allowed # custom validation
+    validate :username_is_allowed #  here we learn some custom validation
     validate :no_new_users_on_monday, :on => :create
 
 
