@@ -457,6 +457,7 @@ but now, it have it
 
 #43 belongs_to presence validation ###########################################
 change in rails 5.0
+belongs_to relationship is not optional by default 
 an object that has belongs_to relationship could be save to the database
 even it didn't have the parent object associate with it but not in rails 5
 now ActiveRecord adds a validation for the object presence
@@ -479,6 +480,7 @@ firstTable+_+secondTable
 
 
 plurals and alphabatical order and underscore
+default name can be configured
 Example
 
 Project-collaborator
@@ -489,7 +491,7 @@ admin_users_pages
 
 rails g migration CreateAdminUsersPagesJoin # create keyword rails convention understand that we want to create a table 
 
-has_and_belongs_to_many :admin_users, :join_table => 'admin_users_pages'
+has_and_belongs_to_many :admin_users, :join_table => 'admin_users_pages' #if the table is out of rails conventions
 #we can specify the join table if we do not follow rails convention
 
 has_and_belongs_to_many :pages
@@ -507,11 +509,14 @@ mysql> select * from admin_users_pages;
 
 #45###########################################
 MANY TO MANY ASSOCIATION :RICH
-
+# here comes a breif explaination why we have rich join when we already have has_and_belongs_to_many reason is in this relationship we don't need any other columns we just want
+# id of other two table but there is a case when we need other data too like if there are two tables 
+# STUDENT(:id, :name,:phone)   COURSE(:id,:name) physics computer math now if we want to add some additional data like appearence of a student in a particular course or you
+# could say marks they obtained then we have add these additional columns in join table and if we want to put some validations on it 
 compared to many-to-many simple associations
 -still uses a join table with two indexed foregin keys
 -Requires a primary key column (:id)
--join table has its own model
+-join table has its own **model**
 -no table name conventions to follow 
 -name ending in "-ments" or "ships" work well
 like assignments - engagments - autherships - memberships 
@@ -519,10 +524,10 @@ like assignments - engagments - autherships - memberships
 AdminUser-Section (the idea everytime the admin made changes to the section we keep the track in table section_edits
 
 AdminUser has_many :section_edits
-sectionEdit belongs_to :admin_user
-
 Section has_many :section_edits
+
 SectionEdit belongs_to :section
+sectionEdit belongs_to :admin_user
 
 rails g model SectionEdit
 
@@ -538,17 +543,39 @@ class Section < ApplicationRecord
 end
 sec = Section.create(:name => "Section One", position: 1)
 p = Page.find(2)
-p.sections << sec
-me = AdminUser.find(2)
-edit = SectionEdit.new(:summary => 'Test edit', :admin_user => me, :section => sec)
+p.sections << sec  # when you use append notation rails keep track for you ----------
+edit = SectionEdit.new
+sec.section_edits << edit # won't work becouse edit need user_admins too remember there are two belongs to 
+me = AdminUser.find(2)								     |
+edit = SectionEdit.new(:summary => 'Test edit', :admin_user => me, :section => sec)  #  but when you create by direct table it will not update with the other related objects we have to reload them
 edit.save
 return 
 INSERT INTO `section_edits` (`admin_user_id`, `section_id`, `summary`, `created_at`, `updated_at`) VALUES (2, 1, 'Test edit', '2019-07-22 01:46:17', '2019-07-22 01:46:17')
 me.section_edits if it use its cache and giving you an error
-me.section_edits(true)
+me.section_edits(true) use this for reloading the object 
+me.section_edits
+sec.section_edits
 
 #46###########################################
 TRAVERSING A RICH ASSOCIATION
+we created rich join between admin_users and section by using section_edits but we gain the ability and the complexity we now go trough to the extra step from one side of association 
+to the other (like page.admin_users)  because we dont go direct to other now we have model between them now we do the extra step sec.section_edits.map{ |se| se.admin_users}
+has_many :through
+- allow us to "reaching across" a rich join
+- treat rich join like an HABTM
+
+create the model section_edits already created 
+
+AdminUser has_many :section_edits
+AdminUser has_many :sections :through => section_edits
+
+Section has_many :section_edits
+Section has_many :admin_users :through => section_edits
+
+now you can jump right into other association  like
+me = AdminUser.find 2
+me.edit_sections
+
 qasam ly lo jo samjh ai ho
 ??????????????????????????????????????????????????????????????????????????????????
 

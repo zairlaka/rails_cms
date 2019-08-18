@@ -7,7 +7,9 @@
     <body>
 
         <div id="header">
+            <span class='left'><%= link_to("- Home Page", root_path) %></span>
             <h1>Simple CMS Admin </h1>
+            <span class='right'><%= link_to("Admin Page -", access_menu_path) %></span>
         </div>
         <div id="main">
             <% if !flash[:notice].blank?  # its check for the nil but also for the empty strings %>
