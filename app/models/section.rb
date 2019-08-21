@@ -2,9 +2,8 @@ class Section < ApplicationRecord
     acts_as_list :scope => :subject
     
     belongs_to :page
-    
     has_many :section_edits
-    has_many :section_edits, :through => :section_edits
+    has_many :admin_users, :through => :section_edits
 
     scope :visible , lambda {where(:visible => true) }
     scope :invisible , lambda { where(:visible => false) }

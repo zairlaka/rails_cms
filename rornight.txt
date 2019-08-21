@@ -340,6 +340,7 @@ User.find(3)
 
 dynamic finders 
 User.find_by_name("First Subject") # return object or nil arais no error 
+User.find_by(name: 'David')
 
 User.all # return object or nil arais no error 
 User.first # return object or nil arais no error 
@@ -545,7 +546,7 @@ sec = Section.create(:name => "Section One", position: 1)
 p = Page.find(2)
 p.sections << sec  # when you use append notation rails keep track for you ----------
 edit = SectionEdit.new
-sec.section_edits << edit # won't work becouse edit need user_admins too remember there are two belongs to 
+sec.section_edits << edit ###### won't work becouse edit need user_admins too remember there are two belongs to and in rails 5 these are not optional so you should provide them in order to save
 me = AdminUser.find(2)								     |
 edit = SectionEdit.new(:summary => 'Test edit', :admin_user => me, :section => sec)  #  but when you create by direct table it will not update with the other related objects we have to reload them
 edit.save
@@ -553,13 +554,14 @@ return
 INSERT INTO `section_edits` (`admin_user_id`, `section_id`, `summary`, `created_at`, `updated_at`) VALUES (2, 1, 'Test edit', '2019-07-22 01:46:17', '2019-07-22 01:46:17')
 me.section_edits if it use its cache and giving you an error
 me.section_edits(true) use this for reloading the object 
-me.section_edits
-sec.section_edits
+me.section_edits [#<SectionEdit id: 1, admin_user_id: 2, section_id: 4, summary: "test in edit_section", created_at: "2019-08-18 01:53:28", updated_at: "2019-08-18 01:53:28">]>
+the query run for above command is [select 'section_edits'* from 'section_edits where 'section_edits'.'admin_user_id' = 2 ]
+sec.section_edits [#<SectionEdit id: 1, admin_user_id: 2, section_id: 4, summary: "test in edit_section", created_at: "2019-08-18 01:53:28", updated_at: "2019-08-18 01:53:28">]>
 
 #46###########################################
 TRAVERSING A RICH ASSOCIATION
 we created rich join between admin_users and section by using section_edits but we gain the ability and the complexity we now go trough to the extra step from one side of association 
-to the other (like page.admin_users)  because we dont go direct to other now we have model between them now we do the extra step sec.section_edits.map{ |se| se.admin_users}
+to the other (like page.admin_users)  because we dont go direct to other now (:like section.admin_users )we have model between them now we do the extra step sec.section_edits.map{ |se| se.admin_users}
 has_many :through
 - allow us to "reaching across" a rich join
 - treat rich join like an HABTM
@@ -572,9 +574,14 @@ AdminUser has_many :sections :through => section_edits
 Section has_many :section_edits
 Section has_many :admin_users :through => section_edits
 
+me.sections
+#<ActiveRecord::Associations::CollectionProxy [#<Section id: 4, page_id: 4, name: "Cookie", position: 2, visible: true, content_type: "Text", content: "what if user disable the cookie then?", created_at: "2019-08-01 19:44:05", updated_at: "2019-08-03 21:39:37">]>
+SELECT  `sections`.* FROM `sections` INNER JOIN `section_edits` ON `sections`.`id` = `section_edits`.`section_id` WHERE `section_edits`.`admin_user_id` = 2 LIMIT 11
+me.sections.first.name == Cookie
 now you can jump right into other association  like
 me = AdminUser.find 2
-me.edit_sections
+me.section_edits
+
 
 qasam ly lo jo samjh ai ho
 ??????????????????????????????????????????????????????????????????????????????????
@@ -1807,6 +1814,7 @@ if its exist it will prepopulate the fields with the existing values
 {
 
 [IMPORTANT NOTES]
+
 # If you're using something like memcached, restarting that may also be helpful
 # after adding a gem it is good practice to restart you rails server
 # rails g controller AdminUsers index, edit, new, delete must be plural because we working with resource that more then one 
@@ -1815,7 +1823,7 @@ if its exist it will prepopulate the fields with the existing values
 # (0..25).to_a create an array having no from 0 to 25 
 # y= (0..99).to_a.shuffle! creates but shuffle
 # ApplicationController if there are general methods which used in all your others controller or views over and over again like
-
+# rails not allowed name id to any non primary column
 
 }
 
@@ -1828,6 +1836,7 @@ def current_user
 	@current_user ||= User.find(session[:user_id)] if session[user_id] // this is the optime approach we hit the database only the first time 
 end
 }
+
 [Associations RELATIONSHIP]
 {
 +-----------------------------+
