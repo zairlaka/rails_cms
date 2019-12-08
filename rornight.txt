@@ -43,8 +43,8 @@ lib your own code for reuse
 rails server nothing more 
 
 #9 ###########################################
-rails generate enter it will give us the help that what can we built 
-rails generate demo index .. view2 view3 demo is controller
+rails generate    it will give us the help that what can we built 
+rails generate controller demo index .. view2 view3 demo is controller
 make demo controller 
 make demo folder and a view file index.html.erb in it in views folder
 make route for index view 
@@ -415,7 +415,7 @@ all three
 
 #41 ono-to-one ###########################################
 has_one :page (in Subject model)
-belongs_to :subject, {:foreign_key => 'foo_id'}  (in Page Model)
+belongs_to :subject, {:foreign_key => 'foo_id'}  (in Page Model)   belongs_to :follower, foreign_key: :follower_id, class_name: "User"
 we don't need to specifiy foregin key if we already made a column with the other table name 
 like subject_id  
 
@@ -1824,9 +1824,16 @@ if its exist it will prepopulate the fields with the existing values
 # y= (0..99).to_a.shuffle! creates but shuffle
 # ApplicationController if there are general methods which used in all your others controller or views over and over again like
 # rails not allowed name id to any non primary column
-
+# new VS create] new is for GET request REST and only intitiate object not saved in db while create is POST request REST initiate object and save it in db
+# delete VS Destroy] Delete is only just like SQL delete no Active Record objects are instantiated so object callbacks are not executed before_destroy etc including any :dependent association options
+# CRUD Callbacks
+- before_create         - before_update            - before_destroy
+- around_create         - around_update            - around_destroy
+- after_create          - after_update             - after_destroy
 }
-
+# ActiveRecord VS ActiveRelation 
+all queries that yield multiple records like scopes, all, where, and joins return an ActiveRecord::Relation object. You can chain these together, and it is only when you use a method like to_sql, first, each, any, to_a, 
+# Named Scopes VS Default Scopes
 [BEST PRACTICES]
 {
 # current_user, logged_in?, require_user etc define in Application controller and tell the rails that they are helper methods 
@@ -1836,6 +1843,7 @@ def current_user
 	@current_user ||= User.find(session[:user_id)] if session[user_id] // this is the optime approach we hit the database only the first time 
 end
 }
+
 
 [Associations RELATIONSHIP]
 {
@@ -1953,3 +1961,663 @@ SELECT "categories".* FROM "categories" INNER JOIN "products" ON "products"."cat
 
 for something  so bad to be so good
 and something so good to be so bad
+
+=================================================================
+=================================================================
+=================================================================
+getting more from Active Record
+
+######################################======>create a database
+create new user Mysql 
+
+GRANT ALL PRIVILEGES ON *.*
+TO 'rails_user'@localhost' 
+INDENTIFIED BY 'secretpassword'
+
+only connect with this local machine 
+*.* access to all database like admin
+
+rails new blog -d mysql
+
+mysql> SHOW DATABASES LIKE 'blog';
+
+in database.yml 
+development: 
+	<<*default #// this means it is inherit from default configuration 
+	database: blog_development 
+	username: superroot #//override this 
+	password: admin
+
+#########################################======>migration shortcut
+use command line to pre-populate migrations with on single command instead of going into that migration
+rails g model Product name:string inventory:integer 'price:decimal{7,2}' description:text restocked_at:datetime 
+#// percision 7 and scale 2
+
+by default rails create a timestamp for you created_at updated_at but if you want to remove them
+rails g model Product --no-timestamps
+
+rails g migration AddQtySoldToProducts qty_sold:integer
+[add_column :products, :qty_sold, :integer]
+
+rails g migration AddRefNumToProducts ref_num:string:index #//apply index on that column
+[add_column :products, :ref_num, :string
+add_index :products, :ref_num]
+
+rails g migration AddStyleToProducts style:references
+[add_reference :product, :style, foreign_key: true]
+
+#########################################======>the change method 
+change is alternative for up and down methods in migration 
+So up has all the code that we need when we want to migrate up and down has all the code when we want to migrate back down.
+
+rails is smart enough to reverse the process 
+change method support
+
+create_tabe
+add_column
+add_index
+add_foreign_key
+add_reference
+add_timestamps
+rename_table
+rename_column
+rename_index
+drop_table * have to give a full defination for reverse it you know it
+remove_column * because when we want to revere of this how he know the type of column so we should give a datatypes
+remove_index
+remove_foreign_key
+remove_reference
+remove_timestamps
+
+#########################################======>write reversible code
+yayayayyaayya
+
+#########################################======>irreversible migration
+yayayayyayaya
+not posible because of data lose that we can't return 
+
+Raise ActiveRecord::IrreversibleMigration
+
+#########################################======>revert migration
+return to a previous state 
+Migrations work the same way, and they can be reverted as well. This is different than when we're running rails db migrate and we're simply moving up and down.
+
+In those cases, we're just doing it locally, and we're controlling how our database looks. 
+With reverting, what we're doing is we're creating a new migration file, putting 
+code in it that says to do the revert and then adding that to our application permanently.
+
+require_relative '201901214173284_add)price'
+class RevertAddPrice < ActiveRecord::Migration[5.0]
+	def change
+		revert AddPriceToProduct #// name of previous class name
+	end
+end
+#// It's a lot easier than having to actually write out the code of all the things that you wanted to change. You can just point it to the file, and say, hey, do the opposite of that.
+
+#########################################======>create a join table
+I'm talking about is a simple join, a simple join that's just between two models. It's not what I call a rich join, 
+where you actually have a model that joins together two other models. 
+This is just a simple table that defines a has and belongs to many relationship between two models. 
+
+By default, Rails would want to have a join table that was named mailing_lists_users. 
+That is the name of those two models pluralized and put in alphabetical order with an underscore between them. That's the Rails default for what this table should be named
+
+def change
+	create_table :mailing_lists_users, :id => false do |t|
+		t.references :mailing_list, :index => true
+		t.references :user, :index => true
+	end
+end
+that the old way of doing it
+
+def change
+	create_join_table :mailing_lists, :users
+	#supress the id and put the index automatically 
+end
+
+
+rails g migration CreateJoinTableMailingListUser mailing_list user
+CreateJoinTable should be start with this then two models and then column names
+
+#########################################======>control migration output
+puts "message"
+say "message", indent=true
+verbose 
+supress messages restrict
+
+#########################################======>dump the database schema
+
+we will discuss database schema files and how to use them effectively. 
+A database schema file is the structural definition of the database. It's like a blueprint of how the database is constructed. 
+Ruby on Rails migrations automatically generate and store a new schema file for 
+you after the migrations have been run. That file represents the current state of the database
+
+provide a quick view of the database structure 
+better to load schema than run all migration 
+
+what they can do is just jump to the ending and load in that schema file which is the end result. That's the content that they actually want anyway.
+There's no reason that we have to build it step by step 
+
+every time we run our migrations, Rails is going to regenerate that schema file for us. 
+That regeneration and saving of that file is called dumping the schema. We can also do it manually from the command line with 
+rails db:schema:dump. 
+
+If you want to do the reverse and load in an existing schema file that resides in that location in that directory, you would use rails db:schema:load
+rails db:create
+rails db:schema:load
+
+if you want an sql format with
+rails db:structure:load or dump
+
+#########################################======>define seed data
+Seed data is an initial set of data for an application and it's usually the minimum data 
+required to make the application work properly or to put it in a good state so we can begin developing. It's useful when we want to initialize a new application.
+rails db:seed #// will populate db with some of initial data
+
+#########################################======>create records with a block
+product = Product.new(
+	:name => 'jacket',
+	:price => 43.54
+)
+product.save
+
+product = Product.new do |p|
+	p.name = 'jacket',
+	p.price = 43.54
+end	#// give more power like do the calculation in this block and more neat
+product.save
+
+#########################################======>update multiple records
+Product.update_attributes(:name, 'zair')
+product.update(:name,'zair') interchangeable single record update
+
+@product.each do |p|
+	p.update(:visible =>true)
+end
+if the record is 2000 then there will be 2000 call to the db 
+
+Product.update_all(:visible => true) one sql 
+Product.where(:flag => false).update_all(:visible => true) or you can scope them like recent
+this approach is much faster but
+no model instances
+no callbacks 
+no validations 
+
+#########################################======>delete multiple records
+product.destroy
+product.delete
+ it will create the SQL statement that it needs to delete the record from the database and it will also run any of the code that's inside the model associated with deleting it; callbacks, for example.
+
+The alternative to this is to use delete. We have an instance of the object and we call delete on it. Now it's easy to get these confused but they're not the same thing. Delete simply uses the existing object in order to get its ID and from that ID, it's going to create an SQL statement that it can send to the database. It's not going to run any associated ruby code.
+
+Product.destroy(23)
+Product.destroy([23,34,23])
+Product.outdated.delete_all
+
+#########################################======>touch records
+@product.touch #// note: validation are not performed 
+@product.touch(:sold_out_at) #// if you want to update specific column
+use case for this 
+if we have association tag and product 
+and we create or update tag then touch product
+
+#########################################======>toggle attribute values
+blog_post.published?
+flip the boolean to the opposite
+blog_post.toggle(:published)
+blog_post.toggle!(:published) #// bang oprator for permenent save db
+
+#########################################======>increment and decrement counter
+@procuct.qty_sold = @product.qty_sold + 1
+@product.increment(:qty_sold)
+@product.increment!(:qty_sold) #// bang oprator for permenent save db
+@product.increment(:qty_sold,5) 5 increament 
+
+//note: This technique works well for simple counters which are not related to associated objects. If you wanted to keep a running count of the related records, you would want to use a counter cache instead,
+
+#########################################======>Track changes to objects
+Dirty objects = has changes which have not been saved in db
+product = Product.first
+product.changed? if the object retirive from db is still the same then its return false
+
+product.name = "green"
+product.changed? #true
+product.changed # ["name"]
+
+product.changes
+#{"name" => ["Blue" , "green"]} return hash with old and new value of that attribute 
+
+product.changed_attributes
+#{"name" => "Blue"} the orignal and old value
+
+#########################################======>Track changes to attributes
+
+product = Product.create(
+	:name=> "couch",
+	:qty_sold => 5 )
+
+prodcut.name = "sofa"
+hey name attribute have you change we can track that by magic fucntion
+prodcut.name_changed? #true
+#product.name_change ["couch","sofa"]
+
+product.restore_attributes #// restore the product.name to its orignal or old values
+
+#########################################======>other find methods
+find_by just like where but instead of return an array it return us object
+Product.find_by(:name => 'couch')
+Product.where(:name => 'couch')
+Product.find_by_name('couch')
+Product.find_by_name_and_price('couch',400)
+
+Category.find_or_initialize_by 
+Category.find_or_create_by(:category => "Tech")
+
+[exist, any many] to see weather the date is exist in our database not to retrive thoug
+Product.where(:name => 'couch) #
+Product.exist?(:name => 'couch') you can;t chain it like up above where
+and you can't use string with it it gives you wrong data 
+like this  Product.exist?("price >= 100")
+
+Product.where(:name => 'couch').any?  #one or more
+Product.where(:name => 'couch').many?  #two or more
+
+#########################################======>select partial record data
+select partial record data
+
+Product.recent.select(:id,:name) #array of objects there is a gotcha it behave like an object but it only contain the attribuets that you ask for 
+Product.recent.pluck(:name) # return array
+Product.recent.ids #shorthand for Product.recent.pluck(:id)
+
+#########################################======>calculations
+Product.count
+Product.where("price >= 20").count 
+Product.sum(:price)
+Product.average(:price)
+Product.minimum(:price)
+Product.maximum(:price)
+
+#########################################======>Negative queries
+fresh = User.recent.pluck(:username) // make an array here for fresh students 
+Product.where.not(:username => fresh) // and pass it here
+
+#########################################======>Or queries
+Post.where("is_deleted = 'yes'").where("role = 'admin'") AND both must be true
+Post.where("is_deleted = 'yes'").or(Post.where("role = 'admin'")
+
+with scope also 
+Post.published.or(Post.pending).or(Post.recent) # note: left to right
+
+WARNING
+must be an ActiveRecord::Relation a (either query or scope)
+must be the same modal
+must differ only by #where or #having
+should not use limit offset distinct // because they will be ignore automatically
+
+#########################################======>Retrieve records in batches
+find_each
+find_in_batches
+in_batches
+
+# normally way to do Productj.all 
+Product.all.each do |pro|
+	pro.recalculate_inventory
+end
+
+#in this case, it's going to find the first 1,000 product records, and yield those up to the block.
+Product.find_each do |pro|
+	pro.recalculate_inventory
+end
+
+#you can make the batch size what ever you want
+Product.find_each(:batch_size => 100, :start => 500, :finish => 1000 do |pro|
+	pro.recalculate_inventory
+end
+
+# Find_in_batches does the same thing, but instead of rendering up each one of the products to the block, it yields up the entire batch. 
+# and return list of array instead of objects
+
+Product.find_in_batches do |batch|
+  sleep 5
+  batch.each do |pro|
+	pro.recalculate_inventory  
+  end
+end
+
+Product.find_in_batches do |batch|
+	write_array_to_file(batch)
+end
+
+#one gotcha here batch.update_all(:on_sale => false) not gonna work because update_all is ActiveRecord method and we are getting array
+
+#so that's why we have in_batches it will return us ActiveRelation instead of array
+Product.in_batches do |batch|
+	sleep 5
+	batch.update_all(:on_sale => false)#now we have access to update_all method
+end
+
+#########################################======>Default scopes
+class User < ActiveRecord::Base
+	default_scope { where(:active => true) }
+	scope :inactive, lambda { where(:active => false) }
+
+User.all # in the defoult_scope automatically add because its default 
+User.inactive.all # alway return nil coz WHERE acitve = true AND active = false
+
+User.unscoped.all #remove default scopes first
+
+Use case for sorting
+
+#########################################======>Replace scopes and conditions
+products = Product.where("price >= 20")
+porducts = Product.order("name ACS").limit(20)
+products.all
+
+#now if you want to undo the 'where'   you can
+products.unscope(:where).all
+
+products.excepts(:where).all #same as above
+products.only(:where).all #now oposite of above
+
+now if you want to revise
+
+products = Product.where(:price => 100..200)
+
+products.rewhere(:price => 100).100 # gotcha not working on string
+
+#########################################======>Join table
+Category.joins(:products).all
+Product.joins(:category).all
+Product.joins(:category).where(:categories => { :name => 'chair' } #note in where
+# made two sql 
+category = Category.find_by_name('chair')
+products = Product.where(:category_id = category.id)
+
+#########################################======>Distict records
+Category.joins(:products).pluck(:name) # retrun duplicates
+Category.joins(:products).distinct.pluck(:name) #alias uniq and distinct
+#########################################======>left join tables
+Product.left_outer_joins(:category).pluck(:name) #bring the recorde even if it hasn't relation 
+#########################################======>eager loading or preloading
+products = Prodcut.all
+
+name = []
+products.each do |pro|
+	name << pro.category.name #hit db everytime when found a new category
+end
+---
+products = Product.includes(:category).all
+	->SELECT * FROM products
+	->SELECT * FROM categories WHERE id IN (1,2,3) now it don't hit db again
+products.each do |pro|
+	name << pro.category.name #hit db everytime when found a new category
+end
+
+---
+#If we use the hash syntax like this, active record is smart enough to know not to do two different queries as it did before
+products = Product.includes(:category)
+products = Product.includes(:category).
+where(:categories => {:name => 'Furniture' }#note categories here is table name not relation name 
+	->SELECT products.*, categories.* FROM products
+	LEFT OUTER JOIN categories
+	ON catagories.id = products.category_id
+	WHERE categories.name = 'Furniture'
+#if you use the string or an array syntax for your where clause then Rails won't recognize that a joins statement would be a more appropriate choice, it will still attempt to make two queries.
+where("categories.name ='Furniture'") 
+#solution if we want one sql like above then
+So we daisy chain references and then once again include the relationship category. This is going to prompt the query to switch over to use that join format and will then allow the categories table to be available for our where clause.
+products = Product.includes(:category).
+where("categories.name ='Furniture'").
+references(:category)
+
+JOINS VS Includes
+they work in similar ways but they're for two different purposes. Join allows the use of a related table when constructing a query and it does not return the related tables data, just the main table.
+Include is used to preload related table data to prevent making many additional queries, it can also allow use of the related table data when constructing a query 
+but it's primary purpose is to make a second set of active record objects available and ready for use.
+
+#########################################======>delegate attributes 
+sku (stock keeping unit)
+in retail we use sku to subdivide a  product
+So, if a product is a shirt, then the sku might be that same shirt but in small, medium, or large sizes. Or,
+ it might be the same shirt but in different colors
+It's essentially the same product, but with some different attributes, 
+and retailers want to keep track of those attributes, because we're not just selling shirts generally. 
+If we run out of large shirts, we want to be sure that we can order more. We want to know whether a certain shirt color is more popular than another shirt color, so maybe next season we can offer more of it. Now, if a user goes to purchase one of these shirts, we're going to want to know the price of that shirt. What's going to be in their shopping cart is not a shirt generally, but one of the skus. The shirt in a particular size or in a particular color, and we're going to want to be able to ask that item or that sku what it's price is.
+It's essentially the same product, but with some different attributes, and retailers want to keep track of those attributes, because we're not just selling shirts generally. If we run out of large shirts, we want to be sure that we can order more. We want to know whether a certain shirt color is more popular than another shirt color, so maybe next season we can offer more of it. Now, if a user goes to purchase one of these shirts, we're going to want to know the price of that shirt. What's going to be in their shopping cart is not a shirt generally, but one of the skus. The shirt in a particular size or in a particular color, and we're going to want to be able to ask that item or that sku what it's price is.
+Instead of having to write 15 different lines of code, I'm able to compress it down to one or two. I should also mention that these attributes do not need to be active record attributes stored in the database. The product object just needs to be able to answer with some value when the method is called on it, so custom defined methods in the product model would work just as well as database attributes
+child asking  a parent for asking more information
+class product
+	belongs_to :category
+	delegate :prefix, :to => :category
+same as function below
+def prefix
+	category.prefix
+end
+#########################################======>set a prefix
+delegate :number, :to => :category, :prefix => true
+ Whenever prefix is set to true, the delegate methods are going to be prefixed with the name of the object that's being delegated to. So instead of calling sku.number in order to get that value, now I would call sku.product_number. Notice that it still returns sku.product.number. The prefixing happens only on the side where we're calling it. Essentially what we're saying is, change the name that I can access this attribute by to include a prefix value.
+
+There are two reasons that you would do this. The first is that is makes it a little clearer that when I call sku.product_number, that I'm asking for the product number. I'm not asking for sku.number, which might lead me to believe that it's a number that's somehow unique to the sku. The second and more common reason is that there might already be an attribute on the sku called number. So I still want to be able to access that method. I want to call sku.number and get a value back but I also want to be able to call sku.product_number and get the product's number back.
+delegate :number, :to => :category, :prefix => 'style'
+now you can access by this 
+#########################################======>witout a related object
+It's perfectly acceptable to make that an optional setting so that a product might have a belongs to relationship to something or it might not.
+delegate :number, :to => :category, :allow_nil => true
+#########################################======>callbacks basics
+ A callback is a way for you to be able to run code automatically, any time one of your objects is created, updated, or destroyed. And you can do that either before or after the object changes its state. The way that you write a callback is that you write a regular method inside the class and then you register that method as a callback, using one of several callback methods. Let's look at some of the callback methods that are available to you.
+     CREATE 			UPDATE			DESTROY
+- before_validation  	- before_validation
+- after_validation 	- after_validation 
+- before_save 		- before_save
+- before_create		- before_update		   - before_destroy
+	# CRUD Callbacks
+- before_create         - before_update            - before_destroy
+- around_create         - around_update            - around_destroy
+- after_create          - after_update             - after_destroy
+- after_save		- after_save		
+- after_commit		- after_commit		   - after_commit
+ After_commit callbacks get called whether we're creating, updating, or destroying. It's basically any time we finish working with the database
+COMMIT SOMETHING IN SQL
+perform clean up
+send an email or an api calls etc
+
+most of the case it is define as private function if you don't want to call by object 
+
+
+USAGE
+Set defaults values
+update other records can be related or something 
+
+#########################################======>conditional callbacks
+add conditions to callbacks registration methods
+:if, :unless
+after_save :rejoie, :if => method_or_block
+method or code block return true or false
+
+before_validation :add_default_prefix, 
+:if => Proc.new{|cat| cat.prefix.blank? }
+??? what is Proc here
+#########################################======>around callbacks
+define code to execute both before and after 
+one method, which must include yeild 
+use when before and after are related
+why not just use a before callback and an after callback separately then? We would use an around callback when those before and after actions are related in some way.
+
+Some common uses for around callbacks would be to measure performance, so that you can compare the time before and action starts and the time after it ends or in order to log some information before and after or to perform some set up operations that then need to be torn down after the action takes place
+
+around_save :log_start_end
+
+def log_start_end 
+	puts 'start before save'
+	yeild
+	puts 'end after save'
+end
+#########################################======>other callbacks and tipes
+after_initialize everytime whenever an object is initialize new create or even when object is loaded from database
+after_find 
+after_touch
+after_rollback opposite of commit 
+
+HALT CALLBACKS ???
+
+Remember also that there's some methods which skip callbacks all together. Here's a list of the most common ones that you're going to come across, and these are all methods that we've already covered in this very course. Usually it's because the method is going straight to SQL in order to speed things up, but by bypassing the Ruby on Rails model code, it prevents the callbacks from having an opportunity to run.
+update_all, delete , delete_all 
+increment, decrement
+toggle 
+touch
+
+#########################################======>use queries with associations
+has_many :product, lambda {order(:position)}
+has_many :product, lambda {where(:enabled => true)}
+Now whenever this association is returned, that scope is going to automatically be applied. It works a lot like a default scope, but instead of being on the model, it's a scope that's being applied to the association
+
+has_many :comments, lambda {includes(:user)}
+Another common usage is for eager loading. We talked about eager loading in the last chapter, using includes. Here we're asking it to return a list of comments. Maybe they're comments on a blog post. At the same time that we display those comments, we're probably going to want to display information about the user that created the comment, so it would make sense for us to preload all of those users at the same time.
+WHY LAMBDA
+Just know that what it means is that the code inside that code block will be evaluated at the time that it's called, not when the model is first loaded. The classic example of where this matters is if you were to use time.now inside your scope. You would expect time.now to be the time that you were calling the code, not the time that the code was originally loaded into Ruby on Rails.
+#########################################======>destroy associted records 
+class Prodcut
+	has_many :images, :dependent => :destroy
+	has_many :category, :dependent => :product #not a good practice 
+#you can use 
+:destroy #run rails code or call backs
+:delete_all #do not run rails code
+:nullify # do not delete the object instead set the null in foreign keys 
+:restrict_with_error #This is going to check for associated objects and if they exist it's going to stop the destruction and instead add an error in the object's errors array
+:restrict_with_exception #That is, throws a big application error that would be up to you to catch. If you didn't catch it then your users would probably get a 500 error. 
+end
+
+
+#########################################======>touch associated records
+belongs_to :category, :touch => true
+Note that this only works on belongs to associations and none of the validation are going to run
+
+#########################################======>counter caches
+@category.products.size
+ SELECT the COUNT FROM products WHERE category_id = 1.
+Now let's imagine that instead of just having one category,
+ and wondering about how many products it has, let's imagine that we want to display a list of 100 categories,
+ and we want that list to have the category name, and then right next to it, have a number of the products in each categories. We would need to fire off 100 SQL queries, as we went through that loop. Counter Caches give us a way to avoid all those extra database queries, by storing a count of the child objects on the parent object, by actually storing it in a column on the parent object's table.
+"parent object's table stores a count of child objects"
+
+belongs_to :category, :counter_cache => true #That will enable a counter cache on the categories table.
+Counter cache, is going to be an option that you're going to use on the belongs_to relationship, record have to be updated in the child tables
+
+category.products_count
+you have to add column in perent table 
+category.productss.count
+category.productss.size
+
+COUNT VS SIZE count always goes to the database
+
+#########################################======>Build records on an association 
+category = Category.first
+Product.create(:name => "Desk", :category => category)
+
+product = Product.new(:name => "shelf")
+category.products << product
+
+category = Category.first
+Category.products.build(:name => "cabinet")
+#build is like calling new
+#It would have the right foreign key set so it would be part of that set. Now as I said, 'build' works like 'new' We also have 'create' which works like 'create' does. It instantiates a new one and it saves it immediately. The return value of both of these would be a 'product object'. This is how you would do it if you had a "has many" relationship
+# use create instead of build if you want to new + save 
+
+#but if you have belongs to and hasone relation then 
+product.build_categoty(:name => "Garden')
+
+#########################################======>self-referential associations
+class Employee < ActiveRecord::Base
+	belongs_to :supervisor,
+	:class_name => 'Employee'
+
+	has_many :subordinates,
+	:class_name => 'Employee',
+	:foreign_key => 'supervisor_id'
+end
+
+user.supervisor
+user.subordinates
+
+another usage
+ So here, I have a self-referential association where a comment can have a parent comment, if we've responded to someone else, or a comment can have many responses if there have been many responses on this comment which in turn are other comments.
+
+class Comment < AcitveRecord::Base
+	belongs_to :parent,
+	:class_name => 'Comment' , :optional => true ## because if we have more than on root than this 
+optional would help us there /\  /|\ like this 
+	
+	has_many :responses,
+	:class_name => 'Commnet',
+	:foreign_key => 'parent_id'
+end
+
+#########################################======>single table inheritence STI
+ That is, they're going to use the same columns, or at least roughly the same columns. But, here's where it's different from self-referential association. We're going to be using different classes in order to allow for different behavior, and those classes will inherit from other active-record classes.
+all objects have a similar data structure (same column)
+different classes allow for different behaviors
+behaviors can be inherited or overridden
+
+class BlogPost < ActiveRecord::Base
+	def allow_comments?
+		true
+	end
+	def send_email_when_published?
+		true
+	end
+end
+now imagine there are also two types of post
+class Review < BlogPost
+	def allow_comment?
+		false
+	end
+end
+class Teaser < BlogPost
+	def send_email_when_published? #inherited and overidden those behaviour according to their needs
+		false
+	end
+end
+now rails model to the trick you only have to add a single column type 
+
+BlogPost.all #select from blog_post
+
+Review.all # BlogPost.where(:type => 'Review').all
+
+rails g model Review --parent=BlogPost #to tell the rails that do not run migration for us and should inherit from BlogPost
+
+ So, to summarize, single table inheritance is useful in cases where the data is almost identical between a variety of different models. But the models and the behaviors are not. We want to have different behaviors for different cases.
+
+#########################################======>Polymorphic associations
+model belongs to several other models 
+has similar data structure and model code
+but we just want it to be owned by diffrent models
+
+class Picture < AcitveRecord::base
+	belongs_to :documentable, :polymorphic => true
+end
+class User < AcitveRecord::Base
+	has_many :pictures, :as => :documentable
+end
+class Product < ActiveRecord::Base
+	has_many :documents, :as => :documentable
+end
+
+file_name || documentable_id || documentable_type
+zzima@outlook.com
+5296491.10673704
+-----
+https://www.lynda.com/Git-tutorials/Basic-Git-configuration/5030978/2810944-4.html
+https://www.lynda.com/JavaScript-tutorials/Installing-Node-js-npm/5035829/2217941-4.html
+https://www.youtube.com/watch?v=MhkGQAoc7bc&list=PLoYCgNOIyGABj2GQSlDRjgvXtqfDxKm5b react
+https://www.youtube.com/watch?v=dSKALhlsuE8
+https://reactjs.org/docs/hello-world.html
+
+https://medium.com/better-programming/how-to-create-a-follow-feature-in-rails-by-aliasing-associations-30d63edee284
+https://www.youtube.com/watch?v=1ZkwvPMiq4Q acitve record tricks
+
+---------
+hello lionel richie
+total eclipse of the heart bonnie tyler
+i will always love you
+unchained melody
+what a wonderful world
