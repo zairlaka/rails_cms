@@ -4,7 +4,8 @@
   <h2>Update Subject</h2>
 
   <%= form_for(@subject, :url => subject_path, :method => 'patch') do |f| %>
-  <%# form_for(@subject) do |f| %>    #we dont have to specify them becuase you are post something and see rails route 
+  <%# form_for(@subject) do |f| %>    
+  <!-- #we dont have to specify them becuase you are post something and see rails route -->
     <%= error_messages_for(f.object) %>
     <%# this function is in our helper don't need to write it over and over for others page and sections%>
     <table summary="Subject form fields">

@@ -64,7 +64,13 @@ a.action.large {
   background: #B6D491;
   color: #4C2516;
 }
-
+.error_notice{
+  height: 1.25em;
+  padding: 0.5em;
+  text-align: center;
+  background: #FF7453;
+  color: #4C2516;
+}
 .back-link {
   font-size: 0.8em;
   margin-bottom: 1em;
@@ -87,7 +93,7 @@ a.action.large {
 
 .show {
   table {
-    clear: both; margin: 0 200px; width: 300px;
+    clear: both; margin: 0 200px;
     &.wide { width: 600px; margin: 0 50px; }
     tr th { white-space: nowrap; padding-right: 5px; }
     tr td { border: 1px solid #666666; }

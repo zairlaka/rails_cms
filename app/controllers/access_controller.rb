@@ -2,6 +2,7 @@ class AccessController < ApplicationController
   layout 'admin'
 
   before_action :confirm_logged_in, :except => [:login, :attempt_login, :logout]
+  #this is a filters go into rornight.txt for more information
   #note here it is good practcie to use except because if you add something new actions here then you don't have to mention here everytine
 
 
@@ -26,10 +27,10 @@ class AccessController < ApplicationController
     if authorized_user #if we find the autherize user then we set a session for it 
       session[:user_id] = authorized_user.id
       session[:username] = authorized_user.username
-      flash[:notice] = "You are now Logged in."
+      flash[:notice] = "You are now Logged in." #by default we get notice and alert we can our own.
       redirect_to(admin_path)
     else
-      flash.now[:notice] = "Invalid username/password Combination." #it is best practice to show the combination aaan maybe not
+      flash.now[:alert] = "Invalid username/password Combination." #it is best practice to show the combination aaan maybe not
       render('login') #it handling the same request and flash did not show and show at the next page that it hit 
       #but by redirect it display the flash but , we loss our parameters, we could store the user name in session or provided in url 
       #solution to that we should use flash.now[:notice]
@@ -44,6 +45,7 @@ class AccessController < ApplicationController
 
   # private
   
+  # this function is moved in application_controller
   # def confirm_logged_in
   #   unless session[:user_id]
   #     flash[:notic] = "Please Login"

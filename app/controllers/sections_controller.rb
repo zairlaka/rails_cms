@@ -9,7 +9,7 @@ class SectionsController < ApplicationController
   end
 
   def show
-    @section = Section.find(params[:id])
+    @section = @page.sections.find(params[:id])
   end
 
   def new
@@ -19,13 +19,13 @@ class SectionsController < ApplicationController
   end
 
   def create
-    @section = Section.new(section_params)
+    section = Section.new(section_params)
 
-    if @section.save
+    if section.save
       flash[:notice] = "Section Created Successfully"
       redirect_to(sections_path(:page_id => @page.id))
     else
-      @section_count = @page.sections.count + 1
+      section_count = @page.sections.count + 1
       @pages =  Page.sorted
       render "new"
     end

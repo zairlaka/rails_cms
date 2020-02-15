@@ -4,6 +4,7 @@
 $red: #993120; // variables in sass doller sign collon color 
 $green: #4c2516;
 $light_green: #B6D491;
+$error_color: #FF7453;
 $yellow: #91472a;
 $dark_brown: #332318;
 $light_brown: #FFFFFF;
@@ -40,6 +41,25 @@ table tr th, table tr td {
   padding: 3px;
   border: 1px solid $white;
 
+}
+table{
+  margin-left: auto;
+  margin-right: auto;
+}
+#login_btn{
+    width: 100%;
+}
+.login{
+  margin-left: 21%;
+  margin-top: 10%;
+
+  table tr th, table tr td {
+    vertical-align: top;
+    text-align: left;
+    padding: 3px;
+    border: 2px dashed $white;
+  
+  }
 }
 a, a:visited { color: $white; }
 a:hover {}
@@ -89,9 +109,9 @@ a:hover {}
   height: 2.5em;
   text-align: right;
   //url('/assets/footer_gradient.png'); repeat-y 0 0; that how you do it in normally css
-  background: $light_brown image-url('/assets/footer_gradient.png') repeat-y 0 0;
+  background: $green image-url('/assets/footer_gradient.png') repeat-y 0 0;
   //image-url is rails  helper inside a css
-  color: $yellow;
+  color: $white;
   box-shadow: 0px 4px 19px 0px #000000;
   p {
     margin: 0;

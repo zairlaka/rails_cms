@@ -2,10 +2,10 @@ class AdminUsersController < ApplicationController
 
   layout 'admin'
 
-  before_action :confirm_logged_in
+  before_action :confirm_logged_in # this is a function which is define in application_controller, so it is accessible to all other controllers too.
 
   def index
-    @admin_users = AdminUser.sorted
+    @admin_users = AdminUser.sorted # sorted is a lamda expression to shorten our code. it is define in AdminUser model
   end
 
   def new
@@ -13,12 +13,12 @@ class AdminUsersController < ApplicationController
   end
 
   def create
-    @admin_user = AdminUser.new(admin_user_params)
+    @admin_user = AdminUser.new(admin_user_params) #this is strong parameters /whitelisting
     if @admin_user.save
-      flash[:notice] = "Admin User Created Successfully."
-      redirect_to(admin_users_path)
+      #flash[:notice] = "Admin User Created Successfully." # or you could do like this your choice 
+      redirect_to :admin_users_path, notice: "Admin User Created Successfully."
     else
-      flash.now[:notice] = "could not created"
+      flash.now[:alert] = "could not created"
       render('new')
     end
 

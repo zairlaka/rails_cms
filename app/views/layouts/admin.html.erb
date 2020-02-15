@@ -17,6 +17,11 @@
                     <%= flash[:notice] %>
                 </div>
             <% end %>
+            <% if !flash[:alert].blank?  # its check for the nil but also for the empty strings %>
+                <div class= "error_notice">
+                    <%= flash[:alert] %>
+                </div>
+            <% end %>
             <!-- after yeild --->
             <div id="content">
                 <%= yield %>    

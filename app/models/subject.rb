@@ -3,6 +3,8 @@ class Subject < ApplicationRecord
     acts_as_list #gem 
 
     has_many :pages
+    #Subject -> Page -> Section
+    #Cyberpunk -> Security -> Honey Pot
 
     #scope lambda syntax
 
