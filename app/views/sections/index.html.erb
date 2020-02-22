@@ -26,7 +26,7 @@
       <td><%= section.name %></td>
       <td class="center"><%= section.visible ? 'Yes' : 'No' %></td>
       <td class="center"><%= section.content_type %></td>
-      <td class="center"><%= section.content %></td>
+      <td class="center"><%= strip_tags(section.content) %></td>
       <td class="actions">
         <%# link_to("Show", 'subjects#{subject.id}', :class => 'action show') %>
         <%# link_to("Show", {:controller => 'subjects' , :action => 'show', :id => subject.id }, :class => 'action show') %>

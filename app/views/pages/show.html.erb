@@ -27,11 +27,11 @@
     </tr>
     <tr>
       <th>Created</th>
-      <td><%= @page.created_at %></td>
+      <td><%= @page.created_at.strftime("%d/%m/%Y at %I:%M%p") %></td>
     </tr>
     <tr>
       <th>Updated</th>
-      <td><%= @page.updated_at %></td>
+      <td><%= @page.updated_at.strftime("%d/%m/%Y at %I:%M%p") %></td>
     </tr>
   </table>
 

@@ -27,15 +27,15 @@
     </tr>
     <tr>
       <th>Content</th>
-      <td><%= @section.content %></td>
+      <td><%= sanitize(@section.content,tags: ['p','br','strong','em','h6','h5','h4','h3','h2','em','hr','b','u' ]) %></td>
     </tr>
     <tr>
       <th>Created</th>
-      <td><%= @section.created_at %></td>
+      <td><%= @section.created_at.strftime("%d/%m/%Y at %I:%M%p") %></td>
     </tr>
     <tr>
       <th>Updated</th>
-      <td><%= @section.updated_at %></td>
+      <td><%= @section.updated_at.strftime("%d/%m/%Y at %I:%M%p") %></td>
     </tr>
   </table>
 

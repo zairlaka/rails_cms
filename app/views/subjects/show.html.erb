@@ -20,11 +20,11 @@
     </tr>
     <tr>
       <th>Created</th>
-      <td><%= @subject.created_at %></td>
+      <td><%= @subject.created_at.strftime("%d/%m/%Y at %I:%M%p") %></td>
     </tr>
     <tr>
       <th>Updated</th>
-      <td><%= @subject.updated_at %></td>
+      <td><%= @subject.updated_at.strftime("%d/%m/%Y at %I:%M%p") %></td>
     </tr>
   </table>
 
